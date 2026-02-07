@@ -1,0 +1,30 @@
+{
+  "name": "freelancer-report",
+  "version": "1.0.0",
+  "description": "Work Reporting Web Application for Freelancers",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:migrate": "supabase migration up"
+  },
+  "keywords": [
+    "freelancer",
+    "work-report",
+    "supabase"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "bootstrap": "^5.3.2",
+    "pdfmake": "^0.2.9"
+  },
+  "devDependencies": {
+    "vite": "^5.0.12"
+  }
+}

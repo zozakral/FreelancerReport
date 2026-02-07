@@ -1,0 +1,129 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Navigation */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert Container */
+#alert-container {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 400px;
+}
+
+/* Loading Spinner */
+#loading-spinner {
+  text-align: center;
+  padding: 40px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Cards */
+.card {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 2px solid #f0f0f0;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  font-weight: 500;
+}
+
+/* Tables */
+.table {
+  background-color: #fff;
+}
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+/* Forms */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* User Selector (Admin) */
+.user-selector {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #0d6efd;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1);
+}
+
+.user-selector label {
+  color: #0d6efd;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+/* Utility Classes */
+.text-muted {
+  color: #6c757d !important;
+}
+
+.d-none {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  #alert-container {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
