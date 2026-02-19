@@ -28,12 +28,16 @@ USING (true);
 -- Only admins can manage templates
 CREATE POLICY "Only admins can insert templates"
 ON report_templates FOR INSERT
-USING (is_admin());
+TO authenticated
+WITH CHECK (is_admin());
 
 CREATE POLICY "Only admins can update templates"
 ON report_templates FOR UPDATE
-USING (is_admin());
+TO authenticated
+USING (is_admin())
+WITH CHECK (is_admin());
 
 CREATE POLICY "Only admins can delete templates"
 ON report_templates FOR DELETE
+TO authenticated
 USING (is_admin());
