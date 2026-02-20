@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 
 /**
  * Register a new user with Freelancer role
@@ -17,7 +17,7 @@ export async function register(email, password, fullName) {
     throw new Error('Password must be at least 6 characters');
   }
 
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
     options: {
@@ -43,7 +43,7 @@ export async function login(email, password) {
     throw new Error('Email and password are required');
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
@@ -58,7 +58,7 @@ export async function login(email, password) {
  * @throws {Error} - On logout errors
  */
 export async function logout() {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabaseClient.auth.signOut();
   if (error) throw new Error(error.message);
 }
 
@@ -67,12 +67,12 @@ export async function logout() {
  * @returns {Promise<Object|null>} - User object with role and profile, or null
  */
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
   
   if (error || !user) return null;
 
   // Fetch profile data including role
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await supabaseClient
     .from('profiles')
     .select('*')
     .eq('id', user.id)
@@ -94,7 +94,7 @@ export async function getCurrentUser() {
  * @returns {Promise<Object|null>} - Session object or null
  */
 export async function getSession() {
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
   if (error) {
     console.error('Error fetching session:', error);
     return null;
@@ -120,5 +120,5 @@ export async function redirectIfNotAuthenticated(redirectUrl = '/pages/login.htm
  * @returns {Object} - Subscription object with unsubscribe method
  */
 export function onAuthStateChange(callback) {
-  return supabase.auth.onAuthStateChange(callback);
+  return supabaseClient.auth.onAuthStateChange(callback);
 }

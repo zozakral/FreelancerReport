@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { isAdmin } from '../utils/permissions.js';
 
@@ -15,7 +15,7 @@ export async function listActivities(onBehalfOfUserId = null) {
     throw new Error('Only admins can view activities on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('activities')
     .select('*')
     .eq('user_id', userId)
@@ -32,7 +32,7 @@ export async function listActivities(onBehalfOfUserId = null) {
  * @throws {Error} - If not found or access denied
  */
 export async function getActivity(activityId) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('activities')
     .select('*')
     .eq('id', activityId)
@@ -64,7 +64,7 @@ export async function createActivity(data, onBehalfOfUserId = null) {
     throw new Error('Hourly rate must be greater than 0');
   }
 
-  const { data: activity, error } = await supabase
+  const { data: activity, error } = await supabaseClient
     .from('activities')
     .insert({
       user_id: userId,
@@ -95,7 +95,7 @@ export async function updateActivity(activityId, updates, onBehalfOfUserId = nul
     throw new Error('Hourly rate must be greater than 0');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('activities')
     .update({
       ...updates,
@@ -121,7 +121,7 @@ export async function deleteActivity(activityId, onBehalfOfUserId = null) {
     throw new Error('Only admins can delete activities on behalf of users');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('activities')
     .delete()
     .eq('id', activityId);
@@ -142,7 +142,7 @@ export async function searchActivities(searchQuery, onBehalfOfUserId = null) {
     throw new Error('Only admins can search activities on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('activities')
     .select('*')
     .eq('user_id', userId)

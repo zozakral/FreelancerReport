@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { isAdmin } from '../utils/permissions.js';
 
 /**
@@ -12,7 +12,7 @@ export async function listUsers(searchQuery = null) {
     throw new Error('Only admins can list users');
   }
 
-  let query = supabase
+  let query = supabaseClient
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false });
@@ -38,7 +38,7 @@ export async function getUser(userId) {
     throw new Error('Only admins can view user details');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -65,7 +65,7 @@ export async function updateUser(userId, updates) {
     throw new Error('Invalid role. Must be "freelancer" or "admin"');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('profiles')
     .update({
       ...updates,
@@ -92,7 +92,7 @@ export async function deleteUser(userId) {
   }
 
   // Delete profile (will cascade delete related data)
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('profiles')
     .delete()
     .eq('id', userId);

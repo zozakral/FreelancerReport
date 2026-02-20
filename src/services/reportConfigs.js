@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { isAdmin } from '../utils/permissions.js';
 
@@ -15,7 +15,7 @@ export async function getReportConfig(companyId, onBehalfOfUserId = null) {
     throw new Error('Only admins can view report configs on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('report_configs')
     .select(`
       *,
@@ -52,7 +52,7 @@ export async function upsertReportConfig(data, onBehalfOfUserId = null) {
     throw new Error('Company and template are required');
   }
 
-  const { data: config, error } = await supabase
+  const { data: config, error } = await supabaseClient
     .from('report_configs')
     .upsert({
       user_id: userId,
@@ -85,7 +85,7 @@ export async function deleteReportConfig(configId, onBehalfOfUserId = null) {
     throw new Error('Only admins can delete report configs on behalf of users');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('report_configs')
     .delete()
     .eq('id', configId);
@@ -98,7 +98,7 @@ export async function deleteReportConfig(configId, onBehalfOfUserId = null) {
  * @returns {Promise<Array>} - Array of template objects
  */
 export async function listReportTemplates() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('report_templates')
     .select('*')
     .order('name');
@@ -113,7 +113,7 @@ export async function listReportTemplates() {
  * @returns {Promise<Object>} - Template object
  */
 export async function getReportTemplate(templateId) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('report_templates')
     .select('*')
     .eq('id', templateId)

@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { isAdmin } from '../utils/permissions.js';
 import { getReportConfig } from './reportConfigs.js';
@@ -83,7 +83,7 @@ export async function saveGeneratedReport(reportData, onBehalfOfUserId = null) {
     throw new Error('Only admins can save reports on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('generated_reports')
     .insert({
       user_id: userId,
@@ -113,7 +113,7 @@ export async function listGeneratedReports(companyId = null, onBehalfOfUserId = 
     throw new Error('Only admins can view reports on behalf of users');
   }
 
-  let query = supabase
+  let query = supabaseClient
     .from('generated_reports')
     .select(`
       *,
@@ -143,7 +143,7 @@ export async function deleteGeneratedReport(reportId, onBehalfOfUserId = null) {
     throw new Error('Only admins can delete reports on behalf of users');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('generated_reports')
     .delete()
     .eq('id', reportId);
@@ -157,7 +157,7 @@ export async function deleteGeneratedReport(reportId, onBehalfOfUserId = null) {
  * @returns {Promise<string>} - Signed URL
  */
 export async function getReportDownloadUrl(filePath) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .storage
     .from('work-reports')
     .createSignedUrl(filePath, 3600); // 1 hour expiry

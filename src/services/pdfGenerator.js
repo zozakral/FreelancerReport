@@ -1,6 +1,6 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 
 // Initialize pdfMake with fonts
@@ -157,7 +157,7 @@ export function downloadPDF(pdfBlob, filename) {
  * @throws {Error} - If upload fails
  */
 export async function uploadPDFToStorage(pdfBlob, filePath) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .storage
     .from('work-reports')
     .upload(filePath, pdfBlob, {
@@ -168,7 +168,7 @@ export async function uploadPDFToStorage(pdfBlob, filePath) {
   if (error) throw new Error(`Upload failed: ${error.message}`);
 
   // Get public URL
-  const { data: urlData } = supabase
+  const { data: urlData } = supabaseClient
     .storage
     .from('work-reports')
     .getPublicUrl(filePath);

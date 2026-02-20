@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { isAdmin } from '../utils/permissions.js';
 
@@ -15,7 +15,7 @@ export async function listCompanies(onBehalfOfUserId = null) {
     throw new Error('Only admins can view companies on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('companies')
     .select('*')
     .eq('user_id', userId)
@@ -32,7 +32,7 @@ export async function listCompanies(onBehalfOfUserId = null) {
  * @throws {Error} - If not found or access denied
  */
 export async function getCompany(companyId) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('companies')
     .select('*')
     .eq('id', companyId)
@@ -60,7 +60,7 @@ export async function createCompany(data, onBehalfOfUserId = null) {
     throw new Error('Company name is required');
   }
 
-  const { data: company, error } = await supabase
+  const { data: company, error } = await supabaseClient
     .from('companies')
     .insert({
       user_id: userId,
@@ -88,7 +88,7 @@ export async function updateCompany(companyId, updates, onBehalfOfUserId = null)
     throw new Error('Only admins can update companies on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('companies')
     .update({
       ...updates,
@@ -114,7 +114,7 @@ export async function deleteCompany(companyId, onBehalfOfUserId = null) {
     throw new Error('Only admins can delete companies on behalf of users');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('companies')
     .delete()
     .eq('id', companyId);
@@ -135,7 +135,7 @@ export async function searchCompanies(searchQuery, onBehalfOfUserId = null) {
     throw new Error('Only admins can search companies on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('companies')
     .select('*')
     .eq('user_id', userId)

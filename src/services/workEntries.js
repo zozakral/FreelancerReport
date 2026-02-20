@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { isAdmin } from '../utils/permissions.js';
 
@@ -17,7 +17,7 @@ export async function listWorkEntries(companyId, month, onBehalfOfUserId = null)
     throw new Error('Only admins can view work entries on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('work_entries')
     .select(`
       *,
@@ -39,7 +39,7 @@ export async function listWorkEntries(companyId, month, onBehalfOfUserId = null)
  * @throws {Error} - If not found or access denied
  */
 export async function getWorkEntry(workEntryId) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('work_entries')
     .select(`
       *,
@@ -74,7 +74,7 @@ export async function upsertWorkEntry(data, onBehalfOfUserId = null) {
     throw new Error('Hours must be greater than 0');
   }
 
-  const { data: workEntry, error } = await supabase
+  const { data: workEntry, error } = await supabaseClient
     .from('work_entries')
     .upsert({
       user_id: userId,
@@ -107,7 +107,7 @@ export async function deleteWorkEntry(workEntryId, onBehalfOfUserId = null) {
     throw new Error('Only admins can delete work entries on behalf of users');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('work_entries')
     .delete()
     .eq('id', workEntryId);
@@ -149,7 +149,7 @@ export async function listAllWorkEntries(onBehalfOfUserId = null) {
     throw new Error('Only admins can view work entries on behalf of users');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('work_entries')
     .select(`
       *,
