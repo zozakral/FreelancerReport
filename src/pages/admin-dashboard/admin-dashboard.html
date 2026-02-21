@@ -13,6 +13,19 @@
 
   <template id="page-content-template">
     <h1 class="h3 mb-3">Admin Dashboard</h1>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">Admin tools</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-outline-primary" href="/admin-users">User management</a>
+          <a class="btn btn-outline-primary" href="/companies">Companies</a>
+          <a class="btn btn-outline-primary" href="/activities">Activities</a>
+          <a class="btn btn-outline-primary" href="/work-entry">Work Entry</a>
+          <a class="btn btn-outline-primary" href="/reports">Reports</a>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script type="module" src="/src/pages/admin-dashboard/adminDashboard.js"></script>

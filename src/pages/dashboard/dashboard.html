@@ -13,6 +13,45 @@
 
   <template id="page-content-template">
     <h1 class="h3 mb-3">Dashboard</h1>
+    <p class="text-muted" id="dashboard-greeting"></p>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">Companies</div>
+            <a class="btn btn-outline-primary" href="/companies">Manage companies</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">Activities</div>
+            <a class="btn btn-outline-primary" href="/activities">Manage activities</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">Work Entry</div>
+            <a class="btn btn-outline-primary" href="/work-entry">Enter hours</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">Reports</div>
+            <a class="btn btn-outline-primary" href="/reports">Generate report</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script type="module" src="/src/pages/dashboard/dashboard.js"></script>

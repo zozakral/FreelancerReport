@@ -13,6 +13,40 @@
 
   <template id="page-content-template">
     <h1 class="h3 mb-3">Companies</h1>
+
+    <div id="admin-user-selector-mount" class="mb-3"></div>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-7">
+        <div class="card">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <span>Company list</span>
+            <button class="btn btn-sm btn-primary" type="button" id="company-new-btn">New</button>
+          </div>
+          <div class="card-body">
+            <div class="input-group mb-3">
+              <input class="form-control" id="company-search" placeholder="Search by name" />
+              <button class="btn btn-outline-secondary" type="button" id="company-search-btn">Search</button>
+              <button class="btn btn-outline-secondary" type="button" id="company-clear-btn">Clear</button>
+            </div>
+
+            <div id="companies-table-mount"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <div class="card">
+          <div class="card-header">Company details</div>
+          <div class="card-body">
+            <div id="company-form-mount"></div>
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-secondary" type="button" id="company-cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script type="module" src="/src/pages/companies/companies.js"></script>

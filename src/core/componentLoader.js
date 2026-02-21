@@ -46,7 +46,7 @@ export async function loadComponent({
   mountEl.innerHTML = html;
 
   if (initExport) {
-    const mod = await import(jsUrl);
+    const mod = await import(/* @vite-ignore */ jsUrl);
     const initFn = mod?.[initExport];
     if (typeof initFn === 'function') {
       await initFn(mountEl, ...initArgs);

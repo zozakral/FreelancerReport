@@ -182,7 +182,8 @@ export async function uploadPDFToStorage(pdfBlob, filePath) {
  * @param {string} period - Period as YYYY-MM
  * @returns {Promise<string>} - File path
  */
-export async function generateFilePath(companyId, period) {
-  const user = await getCurrentUser();
+export async function generateFilePath(companyId, period, userIdOverride = null) {
+  const user = userIdOverride ? { id: userIdOverride } : await getCurrentUser();
   return `${user.id}/${companyId}/${period}.pdf`;
 }
+

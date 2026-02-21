@@ -13,6 +13,31 @@
 
   <template id="page-content-template">
     <h1 class="h3 mb-3">Profile</h1>
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-7">
+        <div class="card">
+          <div class="card-body">
+            <form id="profile-form">
+              <div class="mb-3">
+                <label class="form-label" for="profile-email">Email</label>
+                <input class="form-control" id="profile-email" disabled />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="profile-role">Role</label>
+                <input class="form-control" id="profile-role" disabled />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="profile-full-name">Full name</label>
+                <input class="form-control" id="profile-full-name" required />
+              </div>
+
+              <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script type="module" src="/src/pages/profile/profile.js"></script>

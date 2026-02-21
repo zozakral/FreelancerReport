@@ -16,18 +16,40 @@ export function renderDataTable(rootEl, { columns = [], rows = [], emptyText = '
     throw new Error('DataTable: missing required elements');
   }
 
-  headRow.innerHTML = columns.map((c) => `<th scope="col">${escapeHtml(c.header || '')}</th>`).join('');
-  bodyEl.innerHTML = rows
-    .map((row) => {
-      const tds = columns
-        .map((c) => {
-          const value = typeof c.getValue === 'function' ? c.getValue(row) : row?.[c.key];
-          return `<td>${escapeHtml(value ?? '')}</td>`;
-        })
-        .join('');
-      return `<tr>${tds}</tr>`;
+  headRow.innerHTML = columns
+    .map((c) => {
+      const cls = c.headerClassName ? ` class="${escapeHtml(c.headerClassName)}"` : '';
+      return `<th scope="col"${cls}>${escapeHtml(c.header || '')}</th>`;
     })
     .join('');
+
+  bodyEl.innerHTML = '';
+  rows.forEach((row) => {
+    const tr = document.createElement('tr');
+
+    columns.forEach((c) => {
+      const td = document.createElement('td');
+      if (c.className) td.className = c.className;
+
+      if (typeof c.render === 'function') {
+        const rendered = c.render(row);
+        if (rendered instanceof Node) {
+          td.appendChild(rendered);
+        } else if (rendered !== undefined && rendered !== null) {
+          td.textContent = String(rendered);
+        }
+      } else if (typeof c.renderHtml === 'function') {
+        td.innerHTML = c.renderHtml(row);
+      } else {
+        const value = typeof c.getValue === 'function' ? c.getValue(row) : row?.[c.key];
+        td.textContent = value ?? '';
+      }
+
+      tr.appendChild(td);
+    });
+
+    bodyEl.appendChild(tr);
+  });
 
   const isEmpty = rows.length === 0;
   emptyEl.textContent = emptyText;
