@@ -107,7 +107,7 @@ export async function getSession() {
  * @param {string} redirectUrl - URL to redirect to
  * @returns {Promise<void>}
  */
-export async function redirectIfNotAuthenticated(redirectUrl = '/pages/login.html') {
+export async function redirectIfNotAuthenticated(redirectUrl = '/login') {
   const user = await getCurrentUser();
   if (!user) {
     window.location.href = redirectUrl;

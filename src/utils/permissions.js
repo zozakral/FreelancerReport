@@ -23,7 +23,7 @@ export async function isFreelancer() {
  * @param {string} redirectUrl - URL to redirect to if not admin
  * @returns {Promise<void>}
  */
-export async function requireAdmin(redirectUrl = '/pages/dashboard.html') {
+export async function requireAdmin(redirectUrl = '/dashboard') {
   if (!await isAdmin()) {
     window.location.href = redirectUrl;
   }
