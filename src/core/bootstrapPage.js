@@ -18,6 +18,15 @@ export async function bootstrapPage({
     initExport: null,
   });
 
+  const alertMount = document.querySelector('#alert-container-mount');
+  if (alertMount) {
+    await loadComponent({
+      name: 'alertContainer',
+      mountEl: alertMount,
+      initExport: 'initAlertContainer',
+    });
+  }
+
   await initAppShell();
 
   const templateEl = document.querySelector(templateSelector);
@@ -28,3 +37,4 @@ export async function bootstrapPage({
     contentEl.innerHTML = templateEl.innerHTML;
   }
 }
+

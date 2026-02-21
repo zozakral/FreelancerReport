@@ -1,0 +1,28 @@
+<div class="work-entry-form">
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="work-entry-company">Company</label>
+      <select class="form-select" id="work-entry-company"></select>
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="work-entry-month">Month</label>
+      <input class="form-control" type="month" id="work-entry-month" />
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Activity</th>
+          <th scope="col" class="text-end">Hours</th>
+        </tr>
+      </thead>
+      <tbody id="work-entry-rows"></tbody>
+    </table>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="button" id="work-entry-save">Save</button>
+  </div>
+</div>

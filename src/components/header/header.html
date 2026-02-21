@@ -1,7 +1,59 @@
-<header class="app-header">
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
   <div class="container">
-    <div class="py-3">
-      <a class="navbar-brand" href="/">Freelancer Report</a>
+    <a class="navbar-brand" href="/">Freelancer Report</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar" aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="appNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="nav-links">
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/dashboard" data-path="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/companies" data-path="/companies">Companies</a>
+        </li>
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/activities" data-path="/activities">Activities</a>
+        </li>
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/work-entry" data-path="/work-entry">Work Entry</a>
+        </li>
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/reports" data-path="/reports">Reports</a>
+        </li>
+        <li class="nav-item" data-auth="user">
+          <a class="nav-link" href="/profile" data-path="/profile">Profile</a>
+        </li>
+
+        <li class="nav-item" data-auth="admin">
+          <a class="nav-link" href="/admin-dashboard" data-path="/admin-dashboard">Admin Dashboard</a>
+        </li>
+        <li class="nav-item" data-auth="admin">
+          <a class="nav-link" href="/admin-users" data-path="/admin-users">Users</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item" data-auth="guest">
+          <a class="nav-link" href="/login" data-path="/login">Login</a>
+        </li>
+        <li class="nav-item" data-auth="guest">
+          <a class="nav-link" href="/register" data-path="/register">Register</a>
+        </li>
+
+        <li class="nav-item dropdown" data-auth="user" id="nav-user-menu">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="nav-user-name">User</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" type="button" id="logout-btn">Logout</button></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
-</header>
+</nav>
