@@ -1,10 +1,23 @@
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 
-// Initialize pdfMake with fonts
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+let pdfMakeReadyPromise = null;
+
+async function getPdfMake() {
+  if (!pdfMakeReadyPromise) {
+    pdfMakeReadyPromise = (async () => {
+      const [{ default: pdfMake }, { default: pdfFonts }] = await Promise.all([
+        import('pdfmake/build/pdfmake'),
+        import('pdfmake/build/vfs_fonts'),
+      ]);
+
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      return pdfMake;
+    })();
+  }
+
+  return pdfMakeReadyPromise;
+}
 
 /**
  * Replace placeholders in template with actual data
@@ -103,6 +116,8 @@ export function mergePDFTemplate(templateDef, reportData) {
  */
 export async function generatePDF(reportData) {
   try {
+    const pdfMake = await getPdfMake();
+
     // Merge template with data
     const docDefinition = mergePDFTemplate(reportData.template.template_definition, reportData);
 
