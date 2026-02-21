@@ -32,48 +32,33 @@ This application enables freelancers to:
 ```
 FreelancerReport/
 ├── .github/
-│   └── copilot-instructions.md    # AI agent guidelines
+│   └── copilot-instructions.md
 ├── docs/
-│   ├── database-schema.md         # Database design documentation
-│   └── api-services.md            # Service layer documentation
+│   ├── database-schema.md
+│   └── api-services.md
 ├── src/
-│   ├── config/
-│   │   └── supabase.js            # Supabase client configuration
-│   ├── services/
-│   │   ├── auth.js                # Authentication service
-│   │   ├── users.js               # User management (admin)
-│   │   ├── companies.js           # Company CRUD operations
-│   │   ├── activities.js          # Activity CRUD operations
-│   │   ├── workEntries.js         # Work entry CRUD operations
-│   │   ├── reportConfigs.js       # Report configuration operations
-│   │   ├── reportGenerator.js     # Report generation logic
-│   │   └── pdfGenerator.js        # PDF generation with pdfmake
-│   ├── utils/
-│   │   └── permissions.js         # Role checking utilities
-│   ├── components/
-│   │   └── userSelector.js        # Admin user selector dropdown
-│   └── styles/
-│       └── main.css               # Global styles
-├── supabase/
-│   ├── migrations/                # Database migration scripts
-│   └── seed/
-│       └── templates.sql          # Predefined report templates
-├── pages/
-│   ├── register.html              # User registration
-│   ├── login.html                 # User login
-│   ├── dashboard.html             # Freelancer dashboard
-│   ├── profile.html               # User profile page
-│   ├── companies.html             # Companies management
-│   ├── activities.html            # Activities management
-│   ├── work-entry.html            # Work entry page
-│   ├── reports.html               # Report generation page
-│   └── admin/
-│       ├── dashboard.html         # Admin dashboard
-│       └── users.html             # User management
+│   ├── assets/
+│   ├── components/                # HTML fragment components (header/footer/etc.)
+│   ├── config/                    # Supabase client setup
+│   ├── core/                      # Shell + component loading
+│   ├── pages/                     # Page implementations (HTML/CSS/JS)
+│   ├── services/                  # All Supabase interactions
+│   ├── styles/
+│   └── utils/
+├── admin-dashboard/index.html     # /admin-dashboard (clean URL entrypoint)
+├── admin-users/index.html         # /admin-users (clean URL entrypoint)
+├── activities/index.html          # /activities (clean URL entrypoint)
+├── companies/index.html           # /companies (clean URL entrypoint)
+├── dashboard/index.html           # /dashboard (clean URL entrypoint)
+├── login/index.html               # /login (clean URL entrypoint)
+├── profile/index.html             # /profile (clean URL entrypoint)
+├── register/index.html            # /register (clean URL entrypoint)
+├── reports/index.html             # /reports (clean URL entrypoint)
+├── work-entry/index.html          # /work-entry (clean URL entrypoint)
 ├── index.html                     # Landing page
-├── package.json                   # Dependencies
-├── vite.config.js                 # Vite configuration
-└── .env.example                   # Environment variables template
+├── package.json
+├── vite.config.js
+└── .env.example
 ```
 
 ## Setup Instructions

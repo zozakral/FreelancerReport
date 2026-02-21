@@ -1,5 +1,5 @@
-import { listUsers } from '../services/users.js';
-import { isAdmin } from '../utils/permissions.js';
+import { listUsers } from '../../services/users.js';
+import { isAdmin } from '../../utils/permissions.js';
 
 /**
  * UserSelector component for admin pages

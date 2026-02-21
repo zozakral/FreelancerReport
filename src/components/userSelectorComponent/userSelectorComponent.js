@@ -1,4 +1,4 @@
-import { UserSelector } from '../userSelector.js';
+import { UserSelector } from '../userSelector/userSelector.js';
 
 export function initUserSelectorComponent(rootEl, options = {}) {
   const container = rootEl.querySelector('#user-selector-container');
@@ -9,3 +9,4 @@ export function initUserSelectorComponent(rootEl, options = {}) {
 
   return new UserSelector(`#${tempId}`, options);
 }
+
