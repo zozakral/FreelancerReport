@@ -6,8 +6,10 @@ import { listActivities } from '../../services/activities.js';
 import { listWorkEntries, upsertWorkEntry, deleteWorkEntry } from '../../services/workEntries.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatCurrency } from '../../utils/formatters.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
 
 export async function initWorkEntryPage() {
+	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: 'Work Entry' });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');

@@ -111,7 +111,10 @@ export async function redirectIfNotAuthenticated(redirectUrl = '/login') {
   const user = await getCurrentUser();
   if (!user) {
     window.location.href = redirectUrl;
+    return true;
   }
+
+  return false;
 }
 
 /**

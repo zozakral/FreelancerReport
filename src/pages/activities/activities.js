@@ -6,8 +6,10 @@ import { renderDataTable } from '../../components/dataTable/dataTable.js';
 import { getActivityFormData, setActivityFormData } from '../../components/activityForm/activityForm.js';
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatCurrency } from '../../utils/formatters.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
 
 export async function initActivitiesPage() {
+	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: 'Activities' });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');

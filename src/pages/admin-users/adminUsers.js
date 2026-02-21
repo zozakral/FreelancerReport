@@ -3,8 +3,12 @@ import { loadComponent } from '../../core/componentLoader.js';
 import { listUsers, searchUsers, updateUser, deleteUser } from '../../services/users.js';
 import { renderDataTable } from '../../components/dataTable/dataTable.js';
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { requireAdmin } from '../../utils/permissions.js';
 
 export async function initAdminUsersPage() {
+	if (await redirectIfNotAuthenticated()) return;
+	if (await requireAdmin()) return;
 	await bootstrapPage({ title: 'Admin Users' });
 
 	const tableMount = document.querySelector('#users-table-mount');

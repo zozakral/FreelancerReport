@@ -26,7 +26,10 @@ export async function isFreelancer() {
 export async function requireAdmin(redirectUrl = '/dashboard') {
   if (!await isAdmin()) {
     window.location.href = redirectUrl;
+    return true;
   }
+
+  return false;
 }
 
 /**

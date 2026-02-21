@@ -1,8 +1,10 @@
 import { bootstrapPage } from '../../core/bootstrapPage.js';
 import { getMyProfile, updateMyProfile } from '../../services/profiles.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
 
 export async function initProfilePage() {
+	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: 'Profile' });
 
 	try {

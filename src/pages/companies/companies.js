@@ -5,8 +5,10 @@ import { listCompanies, searchCompanies, createCompany, updateCompany, deleteCom
 import { renderDataTable } from '../../components/dataTable/dataTable.js';
 import { getCompanyFormData, setCompanyFormData } from '../../components/companyForm/companyForm.js';
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
 
 export async function initCompaniesPage() {
+	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: 'Companies' });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');

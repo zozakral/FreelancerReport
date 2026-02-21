@@ -6,6 +6,7 @@ import { generateReportData, saveGeneratedReport } from '../../services/reportGe
 import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath } from '../../services/pdfGenerator.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatDate } from '../../utils/formatters.js';
+import { redirectIfNotAuthenticated } from '../../services/auth.js';
 
 function getMonthStartFromInput(monthValue) {
 	const v = String(monthValue || '').trim();
@@ -13,6 +14,7 @@ function getMonthStartFromInput(monthValue) {
 }
 
 export async function initReportsPage() {
+	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: 'Reports' });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
