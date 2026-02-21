@@ -4,16 +4,16 @@ import { resolve } from 'path';
 function cleanUrlsDevPlugin() {
   const routeToHtml = {
     '/': '/index.html',
-    '/login': '/src/pages/login/login.html',
-    '/register': '/src/pages/register/register.html',
-    '/dashboard': '/src/pages/dashboard/dashboard.html',
-    '/profile': '/src/pages/profile/profile.html',
-    '/companies': '/src/pages/companies/companies.html',
-    '/activities': '/src/pages/activities/activities.html',
-    '/work-entry': '/src/pages/work-entry/work-entry.html',
-    '/reports': '/src/pages/reports/reports.html',
-    '/admin-dashboard': '/src/pages/admin-dashboard/admin-dashboard.html',
-    '/admin-users': '/src/pages/admin-users/admin-users.html',
+    '/login': '/login/index.html',
+    '/register': '/register/index.html',
+    '/dashboard': '/dashboard/index.html',
+    '/profile': '/profile/index.html',
+    '/companies': '/companies/index.html',
+    '/activities': '/activities/index.html',
+    '/work-entry': '/work-entry/index.html',
+    '/reports': '/reports/index.html',
+    '/admin-dashboard': '/admin-dashboard/index.html',
+    '/admin-users': '/admin-users/index.html',
   };
 
   function normalizePathname(urlPath) {
@@ -63,16 +63,16 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        register: resolve(__dirname, 'src/pages/register/register.html'),
-        login: resolve(__dirname, 'src/pages/login/login.html'),
-        dashboard: resolve(__dirname, 'src/pages/dashboard/dashboard.html'),
-        profile: resolve(__dirname, 'src/pages/profile/profile.html'),
-        companies: resolve(__dirname, 'src/pages/companies/companies.html'),
-        activities: resolve(__dirname, 'src/pages/activities/activities.html'),
-        workEntry: resolve(__dirname, 'src/pages/work-entry/work-entry.html'),
-        reports: resolve(__dirname, 'src/pages/reports/reports.html'),
-        adminDashboard: resolve(__dirname, 'src/pages/admin-dashboard/admin-dashboard.html'),
-        adminUsers: resolve(__dirname, 'src/pages/admin-users/admin-users.html'),
+        register: resolve(__dirname, 'register/index.html'),
+        login: resolve(__dirname, 'login/index.html'),
+        dashboard: resolve(__dirname, 'dashboard/index.html'),
+        profile: resolve(__dirname, 'profile/index.html'),
+        companies: resolve(__dirname, 'companies/index.html'),
+        activities: resolve(__dirname, 'activities/index.html'),
+        workEntry: resolve(__dirname, 'work-entry/index.html'),
+        reports: resolve(__dirname, 'reports/index.html'),
+        adminDashboard: resolve(__dirname, 'admin-dashboard/index.html'),
+        adminUsers: resolve(__dirname, 'admin-users/index.html'),
       }
     }
   },
