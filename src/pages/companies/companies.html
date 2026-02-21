@@ -8,14 +8,12 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/companies/companies.css" rel="stylesheet" />
 </head>
-<body class="d-flex flex-column min-vh-100 page-companies">
-  <div id="header-container"></div>
+<body class="page-companies">
+  <div id="app"></div>
 
-  <main class="container py-4" id="page-content">
+  <template id="page-content-template">
     <h1 class="h3 mb-3">Companies</h1>
-  </main>
-
-  <div id="footer-container"></div>
+  </template>
 
   <script type="module" src="/src/pages/companies/companies.js"></script>
 </body>

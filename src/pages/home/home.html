@@ -8,15 +8,13 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/home/home.css" rel="stylesheet" />
 </head>
-<body class="d-flex flex-column min-vh-100 page-home">
-  <div id="header-container"></div>
+<body class="page-home">
+  <div id="app"></div>
 
-  <main class="container py-4" id="page-content">
+  <template id="page-content-template">
     <h1 class="h3 mb-3">Freelancer Report</h1>
     <p class="text-muted mb-0">Front-end scaffold.</p>
-  </main>
-
-  <div id="footer-container"></div>
+  </template>
 
   <script type="module" src="/src/pages/home/home.js"></script>
 </body>

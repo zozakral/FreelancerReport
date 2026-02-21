@@ -1,7 +1,7 @@
-import { initAppShell } from '../../core/appShell.js';
+import { bootstrapPage } from '../../core/bootstrapPage.js';
 
 export async function initLoginPage() {
-	await initAppShell();
+	await bootstrapPage({ title: 'Login' });
 }
 
 void initLoginPage();
