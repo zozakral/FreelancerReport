@@ -1,5 +1,6 @@
 import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
+import { formatCurrency } from '../utils/formatters.js';
 
 let pdfMakeReadyPromise = null;
 
@@ -31,7 +32,7 @@ export function mergePDFTemplate(templateDef, reportData) {
   // Create activities table for insertion
   const activitiesTableBody = [
     // Header row
-    ['#', 'Activity', 'Rate/Hour', 'Hours', 'Total']
+    ['#', 'Activity', 'Rate/Hour (EUR)', 'Hours', 'Total (EUR)']
   ];
 
   // Data rows
@@ -39,9 +40,9 @@ export function mergePDFTemplate(templateDef, reportData) {
     activitiesTableBody.push([
       activity.seq.toString(),
       activity.name,
-      `${activity.hourly_rate.toFixed(2)}`,
+      formatCurrency(activity.hourly_rate),
       activity.hours.toFixed(2),
-      `${activity.total.toFixed(2)}`
+      formatCurrency(activity.total)
     ]);
   });
 
@@ -51,7 +52,7 @@ export function mergePDFTemplate(templateDef, reportData) {
     {},
     {},
     {},
-    { text: reportData.totalAmount.toFixed(2), bold: true }
+    { text: formatCurrency(reportData.totalAmount), bold: true }
   ]);
 
   // Placeholders mapping
@@ -64,7 +65,7 @@ export function mergePDFTemplate(templateDef, reportData) {
     '{{workerName}}': reportData.worker.full_name,
     '{{introText}}': reportData.introText,
     '{{outroText}}': reportData.outroText,
-    '{{totalAmount}}': reportData.totalAmount.toFixed(2),
+    '{{totalAmount}}': formatCurrency(reportData.totalAmount),
     '{{activitiesTable}}': {
       table: {
         headerRows: 1,

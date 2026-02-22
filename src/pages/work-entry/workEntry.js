@@ -50,7 +50,7 @@ export async function initWorkEntryPage() {
 
 	function renderSortLabels() {
 		sortByNameBtn.textContent = `Activity${sortState.key === 'name' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
-		sortByRateBtn.textContent = `Rate/Hour${sortState.key === 'hourly_rate' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
+		sortByRateBtn.textContent = `Rate/Hour (EUR)${sortState.key === 'hourly_rate' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
 	}
 
 	function updateSort(key) {

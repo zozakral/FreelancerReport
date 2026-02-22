@@ -35,13 +35,14 @@ export function formatMonthDisplay(monthString) {
 /**
  * Format currency amount
  * @param {number} amount - Amount to format
- * @param {string} currency - Currency code (default: USD)
  * @returns {string} - Formatted currency string
  */
-export function formatCurrency(amount, currency = 'USD') {
+export const APP_CURRENCY = 'EUR';
+
+export function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency
+    currency: APP_CURRENCY
   }).format(amount);
 }
 

@@ -114,7 +114,7 @@ export async function initActivitiesPage() {
 					onHeaderClick: () => updateSort('name'),
 				},
 				{
-					header: 'Hourly rate',
+					header: 'Hourly rate (EUR)',
 					getValue: (row) => formatCurrency(Number(row.hourly_rate || 0)),
 					sortable: true,
 					sortDirection: sortState.key === 'hourly_rate' ? sortState.direction : null,

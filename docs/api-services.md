@@ -679,7 +679,7 @@ Potential service extensions:
 - Bulk import/export (CSV, Excel)
 - Email report delivery
 - Report scheduling/automation
-- Multi-currency support
+- Enhanced EUR-specific tax and invoicing rules
 - Tax calculation services
 - Invoice generation
 - Time tracking integration
