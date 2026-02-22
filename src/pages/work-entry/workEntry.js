@@ -5,10 +5,11 @@ import { listCompanies } from '../../services/companies.js';
 import { listActivities } from '../../services/activities.js';
 import { listWorkEntries, upsertWorkEntry, deleteWorkEntry } from '../../services/workEntries.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
-import { formatCurrency } from '../../utils/formatters.js';
+import { formatCurrency, formatHours } from '../../utils/formatters.js';
 import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
 
 const DEFAULT_COMPANY_STORAGE_PREFIX = 'workEntry.defaultCompanyId';
+const HOURS_PER_DAY = 8;
 
 export async function initWorkEntryPage() {
 	if (await redirectIfNotAuthenticated()) return;
@@ -41,7 +42,10 @@ export async function initWorkEntryPage() {
 	const saveBtn = formMount.querySelector('#work-entry-save');
 	const sortByNameBtn = formMount.querySelector('#work-entry-sort-name');
 	const sortByRateBtn = formMount.querySelector('#work-entry-sort-rate');
-	if (!companySelect || !monthInput || !rowsBody || !saveBtn || !sortByNameBtn || !sortByRateBtn) return;
+	const totalHoursEl = formMount.querySelector('#work-entry-total-hours');
+	const totalAmountEl = formMount.querySelector('#work-entry-total-amount');
+	const totalDaysEl = formMount.querySelector('#work-entry-total-days');
+	if (!companySelect || !monthInput || !rowsBody || !saveBtn || !sortByNameBtn || !sortByRateBtn || !totalHoursEl || !totalAmountEl || !totalDaysEl) return;
 
 	let companies = [];
 	let activities = [];
@@ -91,6 +95,27 @@ export async function initWorkEntryPage() {
 		const v = String(monthInput.value || '').trim();
 		if (!v) return '';
 		return `${v}-01`;
+	}
+
+	function updateTotals() {
+		const inputs = Array.from(rowsBody.querySelectorAll('input[data-activity-id]'));
+		let totalHours = 0;
+		let totalAmount = 0;
+
+		inputs.forEach((input) => {
+			const hoursValue = String(input.value || '').trim();
+			const parsedHours = hoursValue === '' ? 0 : Number(hoursValue);
+			const hours = Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : 0;
+			const rateValue = Number(input.dataset.hourlyRate || 0);
+			const rate = Number.isFinite(rateValue) && rateValue > 0 ? rateValue : 0;
+
+			totalHours += hours;
+			totalAmount += hours * rate;
+		});
+
+		totalHoursEl.textContent = formatHours(totalHours);
+		totalAmountEl.textContent = formatCurrency(totalAmount);
+		totalDaysEl.textContent = formatHours(totalHours / HOURS_PER_DAY);
 	}
 
 	function setDefaultMonth() {
@@ -151,7 +176,10 @@ export async function initWorkEntryPage() {
 		rowsBody.innerHTML = '';
 		entriesByActivityId = new Map();
 
-		if (!companyId || !monthStart) return;
+		if (!companyId || !monthStart) {
+			updateTotals();
+			return;
+		}
 
 		try {
 			const existing = await listWorkEntries(companyId, monthStart, onBehalfOfUserId);
@@ -179,7 +207,9 @@ export async function initWorkEntryPage() {
 				input.className = 'form-control form-control-sm text-end';
 				input.value = existingEntry ? String(existingEntry.hours) : '';
 				input.dataset.activityId = activity.id;
+				input.dataset.hourlyRate = String(Number(activity.hourly_rate || 0));
 				if (existingEntry?.id) input.dataset.entryId = existingEntry.id;
+				input.addEventListener('input', updateTotals);
 
 				tdHours.appendChild(input);
 
@@ -188,6 +218,8 @@ export async function initWorkEntryPage() {
 				tr.appendChild(tdHours);
 				rowsBody.appendChild(tr);
 			});
+
+			updateTotals();
 		} catch (err) {
 			showErrorAlert(err?.message || 'Failed to load work entries');
 		}
