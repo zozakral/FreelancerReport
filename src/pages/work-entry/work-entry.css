@@ -1,2 +1,7 @@
-.page-work-entry {
+.page-work-entry .card {
+	overflow: hidden;
+}
+
+.page-work-entry #work-entry-form-mount {
+	padding-top: 0.25rem;
 }

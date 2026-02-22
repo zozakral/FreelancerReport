@@ -1,2 +1,7 @@
 .page-profile {
 }
+
+.page-profile #profile-email:disabled,
+.page-profile #profile-role:disabled {
+	background-color: rgba(255, 255, 255, 0.04);
+}

@@ -12,39 +12,41 @@
   <div id="app"></div>
 
   <template id="page-content-template">
-    <h1 class="h3 mb-3">Activities</h1>
+    <section class="page-section">
+      <h1 class="h3 mb-3 page-title">Activities</h1>
 
-    <div id="admin-user-selector-mount" class="mb-3"></div>
+      <div id="admin-user-selector-mount" class="mb-3"></div>
 
-    <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <span>Activity list</span>
-        <button class="btn btn-sm btn-primary" type="button" id="activity-new-btn">New</button>
-      </div>
-      <div class="card-body">
-        <div class="input-group mb-3">
-          <input class="form-control" id="activity-search" placeholder="Search by name" />
-          <button class="btn btn-outline-secondary" type="button" id="activity-search-btn">Search</button>
-          <button class="btn btn-outline-secondary" type="button" id="activity-clear-btn">Clear</button>
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <span>Activity list</span>
+          <button class="btn btn-sm btn-primary" type="button" id="activity-new-btn">New</button>
         </div>
-
-        <div id="activities-table-mount"></div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="activity-form-modal" tabindex="-1" aria-labelledby="activity-form-modal-title" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title fs-5" id="activity-form-modal-title">Activity details</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card-body">
+          <div class="input-group mb-3">
+            <input class="form-control" id="activity-search" placeholder="Search by name" />
+            <button class="btn btn-outline-secondary" type="button" id="activity-search-btn">Search</button>
+            <button class="btn btn-outline-secondary" type="button" id="activity-clear-btn">Clear</button>
           </div>
-          <div class="modal-body">
-            <div id="activity-form-mount"></div>
-          </div>
+
+          <div id="activities-table-mount"></div>
         </div>
       </div>
-    </div>
+
+      <div class="modal fade" id="activity-form-modal" tabindex="-1" aria-labelledby="activity-form-modal-title" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title fs-5" id="activity-form-modal-title">Activity details</h2>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="activity-form-mount"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </template>
 
   <script type="module" src="/src/pages/activities/activities.js"></script>

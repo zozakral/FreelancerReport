@@ -1,2 +1,9 @@
 .company-form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.company-form .d-flex {
+	margin-top: 0.25rem;
 }

@@ -1,2 +1,17 @@
 .app-shell {
+	background: transparent;
+}
+
+.app-main {
+	width: 100%;
+}
+
+.app-main > :first-child {
+	margin-top: 0.25rem;
+}
+
+@media (min-width: 1200px) {
+	.app-main {
+		max-width: 1180px;
+	}
 }

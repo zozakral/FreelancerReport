@@ -1,2 +1,17 @@
-.page-dashboard {
+.page-dashboard .card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-dashboard .card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 22px rgba(17, 24, 39, 0.1);
+}
+
+.page-dashboard .card .fw-semibold {
+	font-size: 1rem;
+	color: #1f2937;
+}
+
+.page-dashboard .btn {
+	min-width: 9.5rem;
 }

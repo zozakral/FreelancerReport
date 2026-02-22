@@ -1,2 +1,7 @@
-.page-admin-users {
+.page-admin-users #user-edit-id:disabled {
+	background-color: #f7f9fc;
+}
+
+.page-admin-users .text-muted.small {
+	line-height: 1.45;
 }

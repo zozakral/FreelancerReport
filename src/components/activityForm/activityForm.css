@@ -1,2 +1,9 @@
 .activity-form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.activity-form .d-flex {
+	margin-top: 0.25rem;
 }

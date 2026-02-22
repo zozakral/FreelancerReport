@@ -1,2 +1,8 @@
-.page-activities {
+.page-activities .page-section {
+	padding-top: 0.25rem;
+}
+
+.page-activities #activities-table-mount {
+	border-top: 1px solid #eef1f5;
+	padding-top: 0.75rem;
 }
