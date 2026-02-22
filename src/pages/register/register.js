@@ -1,9 +1,10 @@
 import { bootstrapPage } from '../../core/bootstrapPage.js';
 import { register, getCurrentUser } from '../../services/auth.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
+import { t } from '../../utils/i18n.js';
 
 export async function initRegisterPage() {
-	await bootstrapPage({ title: 'Register' });
+	await bootstrapPage({ title: t('title.register') });
 
 	const existing = await getCurrentUser();
 	if (existing) {
@@ -21,10 +22,10 @@ export async function initRegisterPage() {
 		e.preventDefault();
 		try {
 			await register(emailEl.value.trim(), passEl.value, nameEl.value.trim());
-			showSuccessMessage('Account created');
+			showSuccessMessage(t('messages.accountCreated'));
 			window.location.href = '/dashboard';
 		} catch (err) {
-			showErrorAlert(err?.message || 'Registration failed');
+			showErrorAlert(err?.message || t('messages.registrationFailed'));
 		}
 	});
 }

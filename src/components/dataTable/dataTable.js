@@ -1,4 +1,6 @@
-export function renderDataTable(rootEl, { columns = [], rows = [], emptyText = 'No data' } = {}) {
+import { t } from '../../utils/i18n.js';
+
+export function renderDataTable(rootEl, { columns = [], rows = [], emptyText = t('table.noData') } = {}) {
   const headRow = rootEl.querySelector('#data-table-head-row');
   const bodyEl = rootEl.querySelector('#data-table-body');
   const emptyEl = rootEl.querySelector('#data-table-empty');

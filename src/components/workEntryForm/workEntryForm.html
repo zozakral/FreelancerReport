@@ -1,12 +1,16 @@
 <div class="work-entry-form">
   <div class="row g-3 mb-3">
     <div class="col-12 col-md-6">
-      <label class="form-label" for="work-entry-company">Company</label>
+      <label class="form-label" for="work-entry-company" data-i18n="labels.company">Company</label>
       <select class="form-select" id="work-entry-company"></select>
     </div>
     <div class="col-12 col-md-6">
-      <label class="form-label" for="work-entry-month">Month</label>
-      <input class="form-control" type="month" id="work-entry-month" />
+      <label class="form-label" for="work-entry-month-select" data-i18n="labels.month">Month</label>
+      <div class="d-flex gap-2">
+        <select class="form-select" id="work-entry-month-select" data-i18n-attr="aria-label:labels.month"></select>
+        <select class="form-select" id="work-entry-year-select" data-i18n-attr="aria-label:labels.year"></select>
+      </div>
+      <input type="hidden" id="work-entry-month" />
     </div>
   </div>
 
@@ -15,12 +19,12 @@
       <thead>
         <tr>
           <th scope="col">
-            <button class="btn btn-link p-0 border-0 text-decoration-none text-reset fw-semibold" type="button" id="work-entry-sort-name">Activity</button>
+            <button class="btn btn-link p-0 border-0 text-decoration-none text-reset fw-semibold" type="button" id="work-entry-sort-name" data-i18n="labels.activity">Activity</button>
           </th>
           <th scope="col" class="text-end">
-            <button class="btn btn-link p-0 border-0 text-decoration-none text-reset fw-semibold" type="button" id="work-entry-sort-rate">Rate/Hour (EUR)</button>
+            <button class="btn btn-link p-0 border-0 text-decoration-none text-reset fw-semibold" type="button" id="work-entry-sort-rate" data-i18n="labels.ratePerHour">Rate/Hour (EUR)</button>
           </th>
-          <th scope="col" class="text-end">Hours</th>
+          <th scope="col" class="text-end" data-i18n="labels.hours">Hours</th>
         </tr>
       </thead>
       <tbody id="work-entry-rows"></tbody>
@@ -30,25 +34,25 @@
   <div class="row g-3 mb-3">
     <div class="col-12 col-md-4">
       <div class="border rounded p-3 h-100">
-        <div class="small text-muted">Total Amount</div>
+        <div class="small text-muted" data-i18n="labels.totalAmount">Total Amount</div>
         <div class="h5 mb-0" id="work-entry-total-amount">€0.00</div>
       </div>
     </div>
     <div class="col-12 col-md-4">
       <div class="border rounded p-3 h-100">
-        <div class="small text-muted">Total Hours</div>
+        <div class="small text-muted" data-i18n="labels.totalHours">Total Hours</div>
         <div class="h5 mb-0" id="work-entry-total-hours">0.00</div>
       </div>
     </div>
     <div class="col-12 col-md-4">
       <div class="border rounded p-3 h-100">
-        <div class="small text-muted">Equivalent Days (8h/day)</div>
+        <div class="small text-muted" data-i18n="labels.equivalentDays">Equivalent Days (8h/day)</div>
         <div class="h5 mb-0" id="work-entry-total-days">0.00</div>
       </div>
     </div>
   </div>
 
   <div class="d-flex gap-2">
-    <button class="btn btn-primary" type="button" id="work-entry-save">Save</button>
+    <button class="btn btn-primary" type="button" id="work-entry-save" data-i18n="actions.save">Save</button>
   </div>
 </div>

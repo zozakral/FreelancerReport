@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 /**
  * Show success alert message
  * @param {string} message - Success message
@@ -39,7 +41,7 @@ function showAlert(message, type = 'info') {
   alertDiv.role = 'alert';
   alertDiv.innerHTML = `
     ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${t('aria.close')}"></button>
   `;
 
   alertContainer.appendChild(alertDiv);

@@ -5,11 +5,12 @@ import { renderDataTable } from '../../components/dataTable/dataTable.js';
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { redirectIfNotAuthenticated } from '../../services/auth.js';
 import { requireAdmin } from '../../utils/permissions.js';
+import { t } from '../../utils/i18n.js';
 
 export async function initAdminUsersPage() {
 	if (await redirectIfNotAuthenticated()) return;
 	if (await requireAdmin()) return;
-	await bootstrapPage({ title: 'Admin Users' });
+	await bootstrapPage({ title: t('title.adminUsers') });
 
 	const tableMount = document.querySelector('#users-table-mount');
 	if (!tableMount) return;
@@ -46,25 +47,28 @@ export async function initAdminUsersPage() {
 	}
 
 	async function removeUser(userId) {
-		const ok = confirmAction('Delete this profile? (Auth user will remain)');
+		const ok = confirmAction(t('confirm.deleteUserProfile'));
 		if (!ok) return;
 		try {
 			await deleteUser(userId);
-			showSuccessMessage('User profile deleted');
+			showSuccessMessage(t('messages.userDeleted'));
 			await refreshList('');
 			clearEditor();
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to delete user');
+			showErrorAlert(err?.message || t('messages.userDeleteFailed'));
 		}
 	}
 
 	function renderUsers(users) {
 		renderDataTable(tableMount, {
 			columns: [
-				{ header: 'Full name', key: 'full_name' },
-				{ header: 'Role', key: 'role' },
+				{ header: t('table.fullName'), key: 'full_name' },
 				{
-					header: 'Actions',
+					header: t('table.role'),
+					getValue: (row) => row?.role === 'admin' ? t('options.role.admin') : t('options.role.freelancer'),
+				},
+				{
+					header: t('table.actions'),
 					headerClassName: 'text-end',
 					className: 'text-end',
 					render: (row) => {
@@ -74,13 +78,13 @@ export async function initAdminUsersPage() {
 						const editBtn = document.createElement('button');
 						editBtn.type = 'button';
 						editBtn.className = 'btn btn-sm btn-outline-primary';
-						editBtn.textContent = 'Edit';
+						editBtn.textContent = t('actions.edit');
 						editBtn.addEventListener('click', () => startEdit(row.id));
 
 						const delBtn = document.createElement('button');
 						delBtn.type = 'button';
 						delBtn.className = 'btn btn-sm btn-outline-danger';
-						delBtn.textContent = 'Delete';
+						delBtn.textContent = t('actions.delete');
 						delBtn.addEventListener('click', () => void removeUser(row.id));
 
 						wrap.appendChild(editBtn);
@@ -90,7 +94,7 @@ export async function initAdminUsersPage() {
 				}
 			],
 			rows: users,
-			emptyText: 'No users',
+			emptyText: t('table.noUsers'),
 		});
 	}
 
@@ -100,7 +104,7 @@ export async function initAdminUsersPage() {
 			usersCache = data;
 			renderUsers(data);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load users');
+			showErrorAlert(err?.message || t('messages.usersLoadFailed'));
 		}
 	}
 
@@ -117,7 +121,7 @@ export async function initAdminUsersPage() {
 	form?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		if (!editingUserId) {
-			showErrorAlert('Select a user to edit');
+			showErrorAlert(t('messages.userSelectToEdit'));
 			return;
 		}
 
@@ -126,15 +130,19 @@ export async function initAdminUsersPage() {
 				full_name: String(nameEl?.value || '').trim(),
 				role: String(roleEl?.value || 'freelancer'),
 			});
-			showSuccessMessage('User updated');
+			showSuccessMessage(t('messages.userUpdated'));
 			await refreshList(String(searchEl?.value || '').trim());
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to update user');
+			showErrorAlert(err?.message || t('messages.userUpdateFailed'));
 		}
 	});
 
 	clearEditor();
 	await refreshList('');
+
+	window.addEventListener('languagechange', () => {
+		renderUsers(usersCache);
+	});
 }
 
 void initAdminUsersPage();

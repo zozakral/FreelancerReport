@@ -1,14 +1,14 @@
 <form id="activity-form" class="activity-form">
   <div class="mb-3">
-    <label class="form-label" for="activity-name">Activity Name</label>
+    <label class="form-label" for="activity-name" data-i18n="labels.activityName">Activity Name</label>
     <input class="form-control" id="activity-name" name="name" required />
   </div>
   <div class="mb-3">
-    <label class="form-label" for="activity-hourly-rate">Hourly Rate (EUR)</label>
+    <label class="form-label" for="activity-hourly-rate" data-i18n="labels.hourlyRate">Hourly Rate (EUR)</label>
     <input class="form-control" id="activity-hourly-rate" name="hourly_rate" type="number" step="0.01" min="0" required />
   </div>
   <div class="d-flex gap-2">
-    <button class="btn btn-primary" type="submit">Save</button>
-    <button class="btn btn-outline-secondary" type="button" id="activity-cancel-btn">Cancel</button>
+    <button class="btn btn-primary" type="submit" data-i18n="actions.save">Save</button>
+    <button class="btn btn-outline-secondary" type="button" id="activity-cancel-btn" data-i18n="actions.cancel">Cancel</button>
   </div>
 </form>

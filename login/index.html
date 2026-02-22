@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,12 +8,12 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/login/login.css" rel="stylesheet" />
 </head>
-<body class="page-login">
+<body class="page-login" data-i18n-title="title.login">
   <div id="app"></div>
 
   <template id="page-content-template">
     <section class="page-section">
-      <h1 class="h3 mb-3 page-title">Login</h1>
+      <h1 class="h3 mb-3 page-title" data-i18n="login.heading">Login</h1>
 
       <div class="row justify-content-center">
       <div class="col-12 col-md-8 col-lg-5">
@@ -21,18 +21,18 @@
           <div class="card-body">
             <form id="login-form">
               <div class="mb-3">
-                <label class="form-label" for="login-email">Email</label>
+                <label class="form-label" for="login-email" data-i18n="labels.email">Email</label>
                 <input class="form-control" type="email" id="login-email" required />
               </div>
               <div class="mb-3">
-                <label class="form-label" for="login-password">Password</label>
+                <label class="form-label" for="login-password" data-i18n="labels.password">Password</label>
                 <input class="form-control" type="password" id="login-password" required minlength="6" />
               </div>
-              <button class="btn btn-primary w-100" type="submit">Login</button>
+              <button class="btn btn-primary w-100" type="submit" data-i18n="actions.login">Login</button>
             </form>
 
             <div class="text-muted small mt-3">
-              No account? <a href="/register">Register</a>
+              <span data-i18n="login.noAccount">No account?</span> <a href="/register" data-i18n="actions.register">Register</a>
             </div>
           </div>
         </div>

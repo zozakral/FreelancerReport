@@ -1,46 +1,54 @@
 <nav class="navbar navbar-expand-lg navbar-light app-header">
   <div class="container">
-    <a class="navbar-brand" href="/">Freelancer Report</a>
+    <a class="navbar-brand" href="/" data-i18n="app.name">Freelancer Report</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar" aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar" aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation" data-i18n-attr="aria-label:nav.toggle">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="appNavbar">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="nav-links">
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/dashboard" data-path="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/dashboard" data-path="/dashboard" data-i18n="nav.dashboard">Dashboard</a>
         </li>
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/companies" data-path="/companies">Companies</a>
+          <a class="nav-link" href="/companies" data-path="/companies" data-i18n="nav.companies">Companies</a>
         </li>
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/activities" data-path="/activities">Activities</a>
+          <a class="nav-link" href="/activities" data-path="/activities" data-i18n="nav.activities">Activities</a>
         </li>
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/work-entry" data-path="/work-entry">Work Entry</a>
+          <a class="nav-link" href="/work-entry" data-path="/work-entry" data-i18n="nav.workEntry">Work Entry</a>
         </li>
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/reports" data-path="/reports">Reports</a>
+          <a class="nav-link" href="/reports" data-path="/reports" data-i18n="nav.reports">Reports</a>
         </li>
         <li class="nav-item" data-auth="user">
-          <a class="nav-link" href="/profile" data-path="/profile">Profile</a>
+          <a class="nav-link" href="/profile" data-path="/profile" data-i18n="nav.profile">Profile</a>
         </li>
 
         <li class="nav-item" data-auth="admin">
-          <a class="nav-link" href="/admin-dashboard" data-path="/admin-dashboard">Admin Dashboard</a>
+          <a class="nav-link" href="/admin-dashboard" data-path="/admin-dashboard" data-i18n="nav.adminDashboard">Admin Dashboard</a>
         </li>
         <li class="nav-item" data-auth="admin">
-          <a class="nav-link" href="/admin-users" data-path="/admin-users">Users</a>
+          <a class="nav-link" href="/admin-users" data-path="/admin-users" data-i18n="nav.users">Users</a>
         </li>
       </ul>
 
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item" data-auth="guest">
-          <a class="nav-link" href="/login" data-path="/login">Login</a>
+          <a class="nav-link" href="/login" data-path="/login" data-i18n="nav.login">Login</a>
         </li>
         <li class="nav-item" data-auth="guest">
-          <a class="nav-link" href="/register" data-path="/register">Register</a>
+          <a class="nav-link" href="/register" data-path="/register" data-i18n="nav.register">Register</a>
+        </li>
+
+        <li class="nav-item d-flex align-items-center me-2" id="nav-language">
+          <label class="visually-hidden" for="language-select" data-i18n="nav.language.label">Language</label>
+          <select class="form-select form-select-sm" id="language-select" aria-label="Language" data-i18n-attr="aria-label:nav.language.label">
+            <option value="bg" data-i18n="nav.language.bg">Bulgarian</option>
+            <option value="en" data-i18n="nav.language.en">English</option>
+          </select>
         </li>
 
         <li class="nav-item dropdown" data-auth="user" id="nav-user-menu">
@@ -48,9 +56,9 @@
             <span id="nav-user-name">User</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li><a class="dropdown-item" href="/profile" data-i18n="nav.userMenu.profile">Profile</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><button class="dropdown-item" type="button" id="logout-btn">Logout</button></li>
+            <li><button class="dropdown-item" type="button" id="logout-btn" data-i18n="nav.logout">Logout</button></li>
           </ul>
         </li>
       </ul>

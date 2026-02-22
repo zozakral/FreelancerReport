@@ -10,6 +10,7 @@ This application enables freelancers to:
 - Log worked hours by company and month
 - Generate structured monthly work reports based on predefined templates
 - Export reports as PDF documents
+- Use the app in two languages: Bulgarian (default) and English
 
 ## Tech Stack
 
@@ -136,6 +137,10 @@ Reports can be:
 - One work entry per activity per company per month
 - Automatic calculation of totals based on hours × hourly rate
 - Easy editing and updating of monthly work data
+
+### Language Support
+- The application supports Bulgarian and English
+- Bulgarian is the default language
 
 ## Architecture Decisions
 

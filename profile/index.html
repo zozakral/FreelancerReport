@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,12 +8,12 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/profile/profile.css" rel="stylesheet" />
 </head>
-<body class="page-profile">
+<body class="page-profile" data-i18n-title="title.profile">
   <div id="app"></div>
 
   <template id="page-content-template">
     <section class="page-section">
-      <h1 class="h3 mb-3 page-title">Profile</h1>
+      <h1 class="h3 mb-3 page-title" data-i18n="profile.heading">Profile</h1>
 
       <div class="row justify-content-center">
       <div class="col-12 col-lg-7">
@@ -21,19 +21,19 @@
           <div class="card-body">
             <form id="profile-form">
               <div class="mb-3">
-                <label class="form-label" for="profile-email">Email</label>
+                <label class="form-label" for="profile-email" data-i18n="labels.email">Email</label>
                 <input class="form-control" id="profile-email" disabled />
               </div>
               <div class="mb-3">
-                <label class="form-label" for="profile-role">Role</label>
+                <label class="form-label" for="profile-role" data-i18n="labels.role">Role</label>
                 <input class="form-control" id="profile-role" disabled />
               </div>
               <div class="mb-3">
-                <label class="form-label" for="profile-full-name">Full name</label>
+                <label class="form-label" for="profile-full-name" data-i18n="labels.fullName">Full name</label>
                 <input class="form-control" id="profile-full-name" required />
               </div>
 
-              <button class="btn btn-primary" type="submit">Save</button>
+              <button class="btn btn-primary" type="submit" data-i18n="actions.save">Save</button>
             </form>
           </div>
         </div>

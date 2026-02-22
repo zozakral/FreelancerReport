@@ -1,3 +1,5 @@
+import { getLocale } from './i18n.js';
+
 /**
  * Format date as YYYY-MM-DD
  * @param {Date} date - Date object
@@ -29,7 +31,7 @@ export function formatMonthStart(date) {
  */
 export function formatMonthDisplay(monthString) {
   const date = new Date(monthString);
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  return date.toLocaleDateString(getLocale(), { month: 'long', year: 'numeric' });
 }
 
 /**
@@ -40,7 +42,7 @@ export function formatMonthDisplay(monthString) {
 export const APP_CURRENCY = 'EUR';
 
 export function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(getLocale(), {
     style: 'currency',
     currency: APP_CURRENCY
   }).format(amount);

@@ -1,3 +1,5 @@
+import { applyTranslations } from '../utils/i18n.js';
+
 const LOADED_CSS_HREFS = new Set();
 
 function ensureStylesheet(href) {
@@ -44,6 +46,7 @@ export async function loadComponent({
 
   const html = await fetchText(htmlUrl);
   mountEl.innerHTML = html;
+  applyTranslations(mountEl);
 
   if (initExport) {
     const mod = await import(/* @vite-ignore */ jsUrl);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,20 +8,20 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/dashboard/dashboard.css" rel="stylesheet" />
 </head>
-<body class="page-dashboard">
+<body class="page-dashboard" data-i18n-title="title.dashboard">
   <div id="app"></div>
 
   <template id="page-content-template">
     <section class="page-section">
-      <h1 class="h3 mb-3 page-title">Dashboard</h1>
+      <h1 class="h3 mb-3 page-title" data-i18n="dashboard.heading">Dashboard</h1>
       <p class="text-muted" id="dashboard-greeting"></p>
 
       <div class="row g-3">
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card">
             <div class="card-body">
-              <div class="fw-semibold mb-2">Companies</div>
-              <a class="btn btn-outline-primary" href="/companies">Manage companies</a>
+              <div class="fw-semibold mb-2" data-i18n="dashboard.card.companies">Companies</div>
+              <a class="btn btn-outline-primary" href="/companies" data-i18n="dashboard.action.manageCompanies">Manage companies</a>
             </div>
           </div>
         </div>
@@ -29,8 +29,8 @@
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card">
             <div class="card-body">
-              <div class="fw-semibold mb-2">Activities</div>
-              <a class="btn btn-outline-primary" href="/activities">Manage activities</a>
+              <div class="fw-semibold mb-2" data-i18n="dashboard.card.activities">Activities</div>
+              <a class="btn btn-outline-primary" href="/activities" data-i18n="dashboard.action.manageActivities">Manage activities</a>
             </div>
           </div>
         </div>
@@ -38,8 +38,8 @@
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card">
             <div class="card-body">
-              <div class="fw-semibold mb-2">Work Entry</div>
-              <a class="btn btn-outline-primary" href="/work-entry">Enter hours</a>
+              <div class="fw-semibold mb-2" data-i18n="dashboard.card.workEntry">Work Entry</div>
+              <a class="btn btn-outline-primary" href="/work-entry" data-i18n="dashboard.action.enterHours">Enter hours</a>
             </div>
           </div>
         </div>
@@ -47,8 +47,8 @@
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card">
             <div class="card-body">
-              <div class="fw-semibold mb-2">Reports</div>
-              <a class="btn btn-outline-primary" href="/reports">Generate report</a>
+              <div class="fw-semibold mb-2" data-i18n="dashboard.card.reports">Reports</div>
+              <a class="btn btn-outline-primary" href="/reports" data-i18n="dashboard.action.generateReport">Generate report</a>
             </div>
           </div>
         </div>

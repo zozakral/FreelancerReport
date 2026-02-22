@@ -2,10 +2,11 @@ import { bootstrapPage } from '../../core/bootstrapPage.js';
 import { getMyProfile, updateMyProfile } from '../../services/profiles.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { t } from '../../utils/i18n.js';
 
 export async function initProfilePage() {
 	if (await redirectIfNotAuthenticated()) return;
-	await bootstrapPage({ title: 'Profile' });
+	await bootstrapPage({ title: t('title.profile') });
 
 	try {
 		const profile = await getMyProfile();
@@ -23,14 +24,14 @@ export async function initProfilePage() {
 				e.preventDefault();
 				try {
 					await updateMyProfile({ full_name: nameEl.value });
-					showSuccessMessage('Profile updated');
+					showSuccessMessage(t('messages.profileUpdated'));
 				} catch (err) {
-					showErrorAlert(err?.message || 'Failed to update profile');
+					showErrorAlert(err?.message || t('messages.profileUpdateFailed'));
 				}
 			});
 		}
 	} catch (err) {
-		showErrorAlert(err?.message || 'Failed to load profile');
+		showErrorAlert(err?.message || t('messages.profileLoadFailed'));
 	}
 }
 

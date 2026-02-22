@@ -157,6 +157,7 @@ src/
 ### State Management
 - **Session Storage:** For admin user selection (persists across page navigations)
 - **Local Storage:** For user preferences (theme, language)
+- **Language Rule:** The app must support Bulgarian and English, with Bulgarian as the default language
 - **No Global State:** Each page manages its own state
 - **Supabase Auth:** Single source of truth for authentication state
 

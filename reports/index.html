@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,43 +8,43 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/reports/reports.css" rel="stylesheet" />
 </head>
-<body class="page-reports">
+<body class="page-reports" data-i18n-title="title.reports">
   <div id="app"></div>
 
   <template id="page-content-template">
     <section class="page-section">
-      <h1 class="h3 mb-3 page-title">Reports</h1>
+      <h1 class="h3 mb-3 page-title" data-i18n="reports.heading">Reports</h1>
 
       <div id="admin-user-selector-mount" class="mb-3"></div>
 
       <div class="row g-4">
         <div class="col-12 col-lg-6">
           <div class="card">
-            <div class="card-header">Report configuration</div>
+            <div class="card-header" data-i18n="reports.config">Report configuration</div>
             <div class="card-body">
               <form id="report-config-form">
                 <div class="mb-3">
-                  <label class="form-label" for="report-company">Company</label>
+                  <label class="form-label" for="report-company" data-i18n="labels.company">Company</label>
                   <select class="form-select" id="report-company" required></select>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="report-template">Template</label>
+                  <label class="form-label" for="report-template" data-i18n="labels.template">Template</label>
                   <select class="form-select" id="report-template" required></select>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="report-location">Location</label>
+                  <label class="form-label" for="report-location" data-i18n="labels.location">Location</label>
                   <input class="form-control" id="report-location" />
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="report-intro">Intro text</label>
+                  <label class="form-label" for="report-intro" data-i18n="labels.introText">Intro text</label>
                   <textarea class="form-control" id="report-intro" rows="3"></textarea>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="report-outro">Concluding text</label>
+                  <label class="form-label" for="report-outro" data-i18n="labels.outroText">Concluding text</label>
                   <textarea class="form-control" id="report-outro" rows="3"></textarea>
                 </div>
 
-                <button class="btn btn-outline-primary" type="submit" id="report-save-config">Save config</button>
+                <button class="btn btn-outline-primary" type="submit" id="report-save-config" data-i18n="actions.saveConfig">Save config</button>
               </form>
             </div>
           </div>
@@ -52,25 +52,34 @@
 
         <div class="col-12 col-lg-6">
           <div class="card">
-            <div class="card-header">Generate PDF</div>
+            <div class="card-header" data-i18n="reports.generate">Generate PDF</div>
             <div class="card-body">
               <div class="row g-3">
                 <div class="col-12 col-md-6">
-                  <label class="form-label" for="report-month">Report month</label>
-                  <input class="form-control" type="month" id="report-month" required />
+                  <label class="form-label" for="report-month-select" data-i18n="labels.reportMonth">Report month</label>
+                  <div class="d-flex gap-2">
+                    <select class="form-select" id="report-month-select" data-i18n-attr="aria-label:labels.month"></select>
+                    <select class="form-select" id="report-year-select" data-i18n-attr="aria-label:labels.year"></select>
+                  </div>
+                  <input type="hidden" id="report-month" required />
                 </div>
                 <div class="col-12 col-md-6">
-                  <label class="form-label" for="report-date">Report date</label>
-                  <input class="form-control" type="date" id="report-date" required />
+                  <label class="form-label" for="report-day-select" data-i18n="labels.reportDate">Report date</label>
+                  <div class="d-flex gap-2">
+                    <select class="form-select" id="report-day-select" data-i18n-attr="aria-label:labels.day"></select>
+                    <select class="form-select" id="report-date-month-select" data-i18n-attr="aria-label:labels.month"></select>
+                    <select class="form-select" id="report-date-year-select" data-i18n-attr="aria-label:labels.year"></select>
+                  </div>
+                  <input type="hidden" id="report-date" required />
                 </div>
               </div>
 
               <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary" type="button" id="report-download">Download</button>
-                <button class="btn btn-outline-primary" type="button" id="report-save-download">Save & Download</button>
+                <button class="btn btn-primary" type="button" id="report-download" data-i18n="actions.download">Download</button>
+                <button class="btn btn-outline-primary" type="button" id="report-save-download" data-i18n="actions.saveDownload">Save & Download</button>
               </div>
 
-              <p class="text-muted small mt-3 mb-0">Requires saved configuration and existing work entries for the selected month.</p>
+              <p class="text-muted small mt-3 mb-0" data-i18n="reports.help">Requires saved configuration and existing work entries for the selected month.</p>
             </div>
           </div>
         </div>

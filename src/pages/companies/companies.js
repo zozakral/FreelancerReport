@@ -6,10 +6,11 @@ import { renderDataTable } from '../../components/dataTable/dataTable.js';
 import { getCompanyFormData, setCompanyFormData } from '../../components/companyForm/companyForm.js';
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { t } from '../../utils/i18n.js';
 
 export async function initCompaniesPage() {
 	if (await redirectIfNotAuthenticated()) return;
-	await bootstrapPage({ title: 'Companies' });
+	await bootstrapPage({ title: t('title.companies') });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
@@ -38,10 +39,17 @@ export async function initCompaniesPage() {
 	let editingCompanyId = null;
 	let companiesCache = [];
 
+	function updateModalTitle() {
+		if (!modalTitleEl) return;
+		modalTitleEl.textContent = editingCompanyId
+			? t('companies.modal.editTitle')
+			: t('companies.modal.newTitle');
+	}
+
 	function startNew() {
 		editingCompanyId = null;
 		setCompanyFormData(formMount, { name: '', tax_number: '', city: '' });
-		if (modalTitleEl) modalTitleEl.textContent = 'New company';
+		updateModalTitle();
 	}
 
 	function startEdit(companyId) {
@@ -49,31 +57,31 @@ export async function initCompaniesPage() {
 		if (!company) return false;
 		editingCompanyId = company.id;
 		setCompanyFormData(formMount, company);
-		if (modalTitleEl) modalTitleEl.textContent = 'Edit company';
+		updateModalTitle();
 		return true;
 	}
 
 	async function removeCompany(companyId) {
-		const ok = confirmAction('Delete this company?');
+		const ok = confirmAction(t('confirm.deleteCompany'));
 		if (!ok) return;
 		try {
 			await deleteCompany(companyId, onBehalfOfUserId);
-			showSuccessMessage('Company deleted');
+			showSuccessMessage(t('messages.companyDeleted'));
 			await refreshList();
 			startNew();
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to delete company');
+			showErrorAlert(err?.message || t('messages.companyDeleteFailed'));
 		}
 	}
 
 	function renderCompanies(companies) {
 		renderDataTable(tableMount, {
 			columns: [
-				{ header: 'Name', key: 'name' },
-				{ header: 'Tax #', key: 'tax_number' },
-				{ header: 'City', key: 'city' },
+				{ header: t('table.name'), key: 'name' },
+				{ header: t('table.taxNumber'), key: 'tax_number' },
+				{ header: t('table.city'), key: 'city' },
 				{
-					header: 'Actions',
+					header: t('table.actions'),
 					headerClassName: 'text-end',
 					className: 'text-end',
 					render: (row) => {
@@ -83,7 +91,7 @@ export async function initCompaniesPage() {
 						const editBtn = document.createElement('button');
 						editBtn.type = 'button';
 						editBtn.className = 'btn btn-sm btn-outline-primary';
-						editBtn.textContent = 'Edit';
+						editBtn.textContent = t('actions.edit');
 						editBtn.addEventListener('click', () => {
 							const started = startEdit(row.id);
 							if (started) companyModal?.show();
@@ -92,7 +100,7 @@ export async function initCompaniesPage() {
 						const delBtn = document.createElement('button');
 						delBtn.type = 'button';
 						delBtn.className = 'btn btn-sm btn-outline-danger';
-						delBtn.textContent = 'Delete';
+						delBtn.textContent = t('actions.delete');
 						delBtn.addEventListener('click', () => void removeCompany(row.id));
 
 						wrap.appendChild(editBtn);
@@ -102,7 +110,7 @@ export async function initCompaniesPage() {
 				}
 			],
 			rows: companies,
-			emptyText: 'No companies yet',
+			emptyText: t('table.noCompanies'),
 		});
 	}
 
@@ -114,7 +122,7 @@ export async function initCompaniesPage() {
 			companiesCache = data;
 			renderCompanies(data);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load companies');
+			showErrorAlert(err?.message || t('messages.companyLoadFailed'));
 		}
 	}
 
@@ -126,17 +134,17 @@ export async function initCompaniesPage() {
 				const data = getCompanyFormData(formMount);
 				if (editingCompanyId) {
 					await updateCompany(editingCompanyId, data, onBehalfOfUserId);
-					showSuccessMessage('Company updated');
+					showSuccessMessage(t('messages.companyUpdated'));
 				} else {
 					await createCompany(data, onBehalfOfUserId);
-					showSuccessMessage('Company created');
+					showSuccessMessage(t('messages.companyCreated'));
 				}
 
 				await refreshList();
 				companyModal?.hide();
 				startNew();
 			} catch (err) {
-				showErrorAlert(err?.message || 'Failed to save company');
+				showErrorAlert(err?.message || t('messages.companySaveFailed'));
 			}
 		});
 	}
@@ -167,6 +175,11 @@ export async function initCompaniesPage() {
 
 	startNew();
 	await refreshList();
+
+	window.addEventListener('languagechange', () => {
+		renderCompanies(companiesCache);
+		updateModalTitle();
+	});
 }
 
 void initCompaniesPage();

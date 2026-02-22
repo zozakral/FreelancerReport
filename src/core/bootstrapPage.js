@@ -1,5 +1,6 @@
 import { loadComponent } from './componentLoader.js';
 import { initAppShell } from './appShell.js';
+import { initI18n } from '../utils/i18n.js';
 
 export async function bootstrapPage({
   title,
@@ -36,5 +37,7 @@ export async function bootstrapPage({
   if (templateEl) {
     contentEl.innerHTML = templateEl.innerHTML;
   }
+
+  initI18n();
 }
 

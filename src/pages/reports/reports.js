@@ -7,8 +7,11 @@ import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath } from '
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatDate } from '../../utils/formatters.js';
 import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
+import { getLocale, t } from '../../utils/i18n.js';
 
 const DEFAULT_COMPANY_STORAGE_PREFIX = 'workEntry.defaultCompanyId';
+const YEAR_RANGE_PAST = 5;
+const YEAR_RANGE_FUTURE = 2;
 
 function getMonthStartFromInput(monthValue) {
 	const v = String(monthValue || '').trim();
@@ -17,7 +20,7 @@ function getMonthStartFromInput(monthValue) {
 
 export async function initReportsPage() {
 	if (await redirectIfNotAuthenticated()) return;
-	await bootstrapPage({ title: 'Reports' });
+	await bootstrapPage({ title: t('title.reports') });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
@@ -43,13 +46,105 @@ export async function initReportsPage() {
 	const configForm = document.querySelector('#report-config-form');
 	const monthEl = document.querySelector('#report-month');
 	const dateEl = document.querySelector('#report-date');
+	const monthSelectEl = document.querySelector('#report-month-select');
+	const yearSelectEl = document.querySelector('#report-year-select');
+	const daySelectEl = document.querySelector('#report-day-select');
+	const dateMonthSelectEl = document.querySelector('#report-date-month-select');
+	const dateYearSelectEl = document.querySelector('#report-date-year-select');
 	const downloadBtn = document.querySelector('#report-download');
 	const saveDownloadBtn = document.querySelector('#report-save-download');
-	if (!companyEl || !templateEl || !locationEl || !introEl || !outroEl || !configForm || !monthEl || !dateEl || !downloadBtn || !saveDownloadBtn) return;
+	if (!companyEl || !templateEl || !locationEl || !introEl || !outroEl || !configForm || !monthEl || !dateEl || !monthSelectEl || !yearSelectEl || !daySelectEl || !dateMonthSelectEl || !dateYearSelectEl || !downloadBtn || !saveDownloadBtn) return;
 
 	const now = new Date();
 	monthEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 	dateEl.value = formatDate(now);
+
+	function buildMonthOptions() {
+		const formatter = new Intl.DateTimeFormat(getLocale(), { month: 'long' });
+		return Array.from({ length: 12 }, (_, index) => {
+			const monthNumber = index + 1;
+			const label = formatter.format(new Date(2020, index, 1));
+			return { value: String(monthNumber).padStart(2, '0'), label };
+		});
+	}
+
+	function buildYearOptions() {
+		const start = now.getFullYear() - YEAR_RANGE_PAST;
+		const end = now.getFullYear() + YEAR_RANGE_FUTURE;
+		const years = [];
+		for (let year = start; year <= end; year += 1) {
+			years.push(String(year));
+		}
+		return years;
+	}
+
+	function syncReportMonthValue() {
+		const month = monthSelectEl.value;
+		const year = yearSelectEl.value;
+		if (!month || !year) return;
+		monthEl.value = `${year}-${month}`;
+	}
+
+	function updateDayOptions() {
+		const year = Number(dateYearSelectEl.value);
+		const month = Number(dateMonthSelectEl.value);
+		if (!year || !month) return;
+		const currentDay = Number(daySelectEl.value || 1);
+		const daysInMonth = new Date(year, month, 0).getDate();
+		daySelectEl.innerHTML = Array.from({ length: daysInMonth }, (_, index) => {
+			const dayValue = String(index + 1).padStart(2, '0');
+			return `<option value="${dayValue}">${dayValue}</option>`;
+		}).join('');
+		const nextDay = String(Math.min(currentDay, daysInMonth)).padStart(2, '0');
+		daySelectEl.value = nextDay;
+	}
+
+	function syncReportDateValue() {
+		const day = daySelectEl.value;
+		const month = dateMonthSelectEl.value;
+		const year = dateYearSelectEl.value;
+		if (!day || !month || !year) return;
+		dateEl.value = `${year}-${month}-${day}`;
+	}
+
+	function renderMonthControls(selectedValue = '') {
+		const selected = String(selectedValue || monthEl.value || '').trim();
+		const [selectedYear, selectedMonth] = selected.split('-');
+		const currentMonth = selectedMonth || String(now.getMonth() + 1).padStart(2, '0');
+		const currentYear = selectedYear || String(now.getFullYear());
+
+		monthSelectEl.innerHTML = buildMonthOptions()
+			.map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+			.join('');
+		yearSelectEl.innerHTML = buildYearOptions()
+			.map((year) => `<option value="${year}">${year}</option>`)
+			.join('');
+
+		monthSelectEl.value = currentMonth;
+		yearSelectEl.value = currentYear;
+		syncReportMonthValue();
+	}
+
+	function renderDateControls(selectedValue = '') {
+		const selected = String(selectedValue || dateEl.value || '').trim();
+		const [selectedYear, selectedMonth, selectedDay] = selected.split('-');
+		const currentYear = selectedYear || String(now.getFullYear());
+		const currentMonth = selectedMonth || String(now.getMonth() + 1).padStart(2, '0');
+		const currentDay = selectedDay || String(now.getDate()).padStart(2, '0');
+
+		dateMonthSelectEl.innerHTML = buildMonthOptions()
+			.map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+			.join('');
+		dateYearSelectEl.innerHTML = buildYearOptions()
+			.map((year) => `<option value="${year}">${year}</option>`)
+			.join('');
+
+		dateMonthSelectEl.value = currentMonth;
+		dateYearSelectEl.value = currentYear;
+		updateDayOptions();
+		daySelectEl.value = currentDay;
+		syncReportDateValue();
+	}
 
 	function getStorageKey() {
 		const effectiveUserId = onBehalfOfUserId || currentUserId;
@@ -87,18 +182,18 @@ export async function initReportsPage() {
 				? defaultCompanyId
 				: (companies.length > 0 ? String(companies[0].id) : '');
 
-			companyEl.innerHTML = '<option value="">Select company...</option>' + companies
+			companyEl.innerHTML = `<option value="">${t('placeholders.selectCompany')}</option>` + companies
 				.map((c) => `<option value="${c.id}">${c.name}</option>`)
 				.join('');
 
-			templateEl.innerHTML = '<option value="">Select template...</option>' + templates
+			templateEl.innerHTML = `<option value="">${t('placeholders.selectTemplate')}</option>` + templates
 				.map((t) => `<option value="${t.id}">${t.name}</option>`)
 				.join('');
 
 			companyEl.value = selectedCompanyId;
 			storeDefaultCompanyId(selectedCompanyId);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load companies/templates');
+			showErrorAlert(err?.message || t('messages.reportsLoadLookupsFailed'));
 		}
 	}
 
@@ -120,7 +215,7 @@ export async function initReportsPage() {
 				outroEl.value = '';
 			}
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load report config');
+			showErrorAlert(err?.message || t('messages.reportConfigLoadFailed'));
 		}
 	}
 
@@ -128,7 +223,7 @@ export async function initReportsPage() {
 		const companyId = companyEl.value;
 		const templateId = templateEl.value;
 		if (!companyId || !templateId) {
-			showErrorAlert('Select company and template');
+			showErrorAlert(t('messages.reportSelectCompanyTemplate'));
 			return;
 		}
 
@@ -140,9 +235,9 @@ export async function initReportsPage() {
 				intro_text: introEl.value,
 				outro_text: outroEl.value,
 			}, onBehalfOfUserId);
-			showSuccessMessage('Report configuration saved');
+			showSuccessMessage(t('messages.reportConfigSaved'));
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to save configuration');
+			showErrorAlert(err?.message || t('messages.reportConfigSaveFailed'));
 		}
 	}
 
@@ -151,7 +246,7 @@ export async function initReportsPage() {
 		const monthStart = getMonthStartFromInput(monthEl.value);
 		const reportDate = String(dateEl.value || '').trim();
 		if (!companyId || !monthStart || !reportDate) {
-			showErrorAlert('Select company, month, and report date');
+			showErrorAlert(t('messages.reportSelectCompanyMonthDate'));
 			return;
 		}
 
@@ -173,12 +268,12 @@ export async function initReportsPage() {
 					save_to_storage: true,
 				}, onBehalfOfUserId);
 
-				showSuccessMessage('Report saved');
+				showSuccessMessage(t('messages.reportSaved'));
 			}
 
 			downloadPDF(blob, filename);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to generate report');
+			showErrorAlert(err?.message || t('messages.reportGenerateFailed'));
 		}
 	}
 
@@ -191,11 +286,38 @@ export async function initReportsPage() {
 		void saveConfig();
 	});
 
+	monthSelectEl.addEventListener('change', () => {
+		syncReportMonthValue();
+	});
+	yearSelectEl.addEventListener('change', () => {
+		syncReportMonthValue();
+	});
+	dateMonthSelectEl.addEventListener('change', () => {
+		updateDayOptions();
+		syncReportDateValue();
+	});
+	dateYearSelectEl.addEventListener('change', () => {
+		updateDayOptions();
+		syncReportDateValue();
+	});
+	daySelectEl.addEventListener('change', () => {
+		syncReportDateValue();
+	});
+
 	downloadBtn.addEventListener('click', () => void generateAndDownload({ saveToStorage: false }));
 	saveDownloadBtn.addEventListener('click', () => void generateAndDownload({ saveToStorage: true }));
 
 	await loadLookups();
 	await loadConfigForSelectedCompany();
+	renderMonthControls(monthEl.value);
+	renderDateControls(dateEl.value);
+
+	window.addEventListener('languagechange', () => {
+		void loadLookups();
+		void loadConfigForSelectedCompany();
+		renderMonthControls(monthEl.value);
+		renderDateControls(dateEl.value);
+	});
 }
 
 void initReportsPage();

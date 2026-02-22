@@ -1,4 +1,8 @@
 <div class="month-selector">
-  <label class="form-label" for="month-selector-input">Month</label>
-  <input class="form-control" type="month" id="month-selector-input" />
+  <label class="form-label" for="month-selector-month" data-i18n="labels.month">Month</label>
+  <div class="d-flex gap-2">
+    <select class="form-select" id="month-selector-month" data-i18n-attr="aria-label:labels.month"></select>
+    <select class="form-select" id="month-selector-year" data-i18n-attr="aria-label:labels.year"></select>
+  </div>
+  <input type="hidden" id="month-selector-input" />
 </div>

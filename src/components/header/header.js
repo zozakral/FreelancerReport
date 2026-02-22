@@ -1,6 +1,7 @@
 import { getCurrentUser, logout, onAuthStateChange } from '../../services/auth.js';
 import { isAdmin } from '../../utils/permissions.js';
 import { showErrorAlert } from '../../utils/ui.js';
+import { applyTranslations, getLanguage, setLanguage, t } from '../../utils/i18n.js';
 
 function setVisibleByAuth(rootEl, { isLoggedIn, isAdminUser }) {
   const guestEls = rootEl.querySelectorAll('[data-auth="guest"]');
@@ -39,11 +40,24 @@ async function renderHeaderState(rootEl) {
 
   const nameEl = rootEl.querySelector('#nav-user-name');
   if (nameEl) {
-    nameEl.textContent = user?.full_name || user?.email || 'User';
+    nameEl.textContent = user?.full_name || user?.email || t('nav.userDefault');
   }
 }
 
 export function initHeader(rootEl) {
+  const languageSelect = rootEl.querySelector('#language-select');
+  if (languageSelect) {
+    languageSelect.value = getLanguage();
+    languageSelect.addEventListener('change', (e) => {
+      setLanguage(e.target.value);
+      applyTranslations(document);
+    });
+
+    window.addEventListener('languagechange', () => {
+      languageSelect.value = getLanguage();
+    });
+  }
+
   const logoutBtn = rootEl.querySelector('#logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
@@ -51,7 +65,7 @@ export function initHeader(rootEl) {
         await logout();
         window.location.href = '/login';
       } catch (e) {
-        showErrorAlert(e?.message || 'Logout failed');
+        showErrorAlert(e?.message || t('messages.logoutFailed'));
       }
     });
   }

@@ -7,13 +7,16 @@ import { listWorkEntries, upsertWorkEntry, deleteWorkEntry } from '../../service
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatCurrency, formatHours } from '../../utils/formatters.js';
 import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
+import { getLocale, t } from '../../utils/i18n.js';
 
 const DEFAULT_COMPANY_STORAGE_PREFIX = 'workEntry.defaultCompanyId';
 const HOURS_PER_DAY = 8;
+const YEAR_RANGE_PAST = 5;
+const YEAR_RANGE_FUTURE = 2;
 
 export async function initWorkEntryPage() {
 	if (await redirectIfNotAuthenticated()) return;
-	await bootstrapPage({ title: 'Work Entry' });
+	await bootstrapPage({ title: t('title.workEntry') });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
@@ -38,6 +41,8 @@ export async function initWorkEntryPage() {
 
 	const companySelect = formMount.querySelector('#work-entry-company');
 	const monthInput = formMount.querySelector('#work-entry-month');
+	const monthSelect = formMount.querySelector('#work-entry-month-select');
+	const yearSelect = formMount.querySelector('#work-entry-year-select');
 	const rowsBody = formMount.querySelector('#work-entry-rows');
 	const saveBtn = formMount.querySelector('#work-entry-save');
 	const sortByNameBtn = formMount.querySelector('#work-entry-sort-name');
@@ -45,16 +50,61 @@ export async function initWorkEntryPage() {
 	const totalHoursEl = formMount.querySelector('#work-entry-total-hours');
 	const totalAmountEl = formMount.querySelector('#work-entry-total-amount');
 	const totalDaysEl = formMount.querySelector('#work-entry-total-days');
-	if (!companySelect || !monthInput || !rowsBody || !saveBtn || !sortByNameBtn || !sortByRateBtn || !totalHoursEl || !totalAmountEl || !totalDaysEl) return;
+	if (!companySelect || !monthInput || !monthSelect || !yearSelect || !rowsBody || !saveBtn || !sortByNameBtn || !sortByRateBtn || !totalHoursEl || !totalAmountEl || !totalDaysEl) return;
 
 	let companies = [];
 	let activities = [];
 	let entriesByActivityId = new Map();
 	let sortState = { key: 'hourly_rate', direction: 'asc' };
 
+	function buildMonthOptions() {
+		const formatter = new Intl.DateTimeFormat(getLocale(), { month: 'long' });
+		return Array.from({ length: 12 }, (_, index) => {
+			const monthNumber = index + 1;
+			const label = formatter.format(new Date(2020, index, 1));
+			return { value: String(monthNumber).padStart(2, '0'), label };
+		});
+	}
+
+	function buildYearOptions() {
+		const now = new Date();
+		const start = now.getFullYear() - YEAR_RANGE_PAST;
+		const end = now.getFullYear() + YEAR_RANGE_FUTURE;
+		const years = [];
+		for (let year = start; year <= end; year += 1) {
+			years.push(String(year));
+		}
+		return years;
+	}
+
+	function syncMonthValue() {
+		const month = monthSelect.value;
+		const year = yearSelect.value;
+		if (!month || !year) return;
+		monthInput.value = `${year}-${month}`;
+	}
+
+	function renderMonthControls(selectedValue = '') {
+		const selected = String(selectedValue || monthInput.value || '').trim();
+		const [selectedYear, selectedMonth] = selected.split('-');
+		const currentMonth = selectedMonth || String(new Date().getMonth() + 1).padStart(2, '0');
+		const currentYear = selectedYear || String(new Date().getFullYear());
+
+		monthSelect.innerHTML = buildMonthOptions()
+			.map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+			.join('');
+		yearSelect.innerHTML = buildYearOptions()
+			.map((year) => `<option value="${year}">${year}</option>`)
+			.join('');
+
+		monthSelect.value = currentMonth;
+		yearSelect.value = currentYear;
+		syncMonthValue();
+	}
+
 	function renderSortLabels() {
-		sortByNameBtn.textContent = `Activity${sortState.key === 'name' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
-		sortByRateBtn.textContent = `Rate/Hour (EUR)${sortState.key === 'hourly_rate' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
+		sortByNameBtn.textContent = `${t('labels.activity')}${sortState.key === 'name' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
+		sortByRateBtn.textContent = `${t('labels.ratePerHour')}${sortState.key === 'hourly_rate' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
 	}
 
 	function updateSort(key) {
@@ -123,6 +173,7 @@ export async function initWorkEntryPage() {
 		const y = String(now.getFullYear());
 		const m = String(now.getMonth() + 1).padStart(2, '0');
 		monthInput.value = `${y}-${m}`;
+		renderMonthControls(monthInput.value);
 	}
 
 	function getStorageKey() {
@@ -159,14 +210,14 @@ export async function initWorkEntryPage() {
 				? defaultCompanyId
 				: (companies.length > 0 ? String(companies[0].id) : '');
 
-			companySelect.innerHTML = '<option value="">Select company...</option>' + companies
+			companySelect.innerHTML = `<option value="">${t('placeholders.selectCompany')}</option>` + companies
 				.map((c) => `<option value="${c.id}">${c.name}</option>`)
 				.join('');
 
 			companySelect.value = selectedCompanyId;
 			storeDefaultCompanyId(selectedCompanyId);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load companies/activities');
+			showErrorAlert(err?.message || t('messages.workEntriesLoadLookupsFailed'));
 		}
 	}
 
@@ -221,7 +272,7 @@ export async function initWorkEntryPage() {
 
 			updateTotals();
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load work entries');
+			showErrorAlert(err?.message || t('messages.workEntriesLoadFailed'));
 		}
 	}
 
@@ -229,7 +280,7 @@ export async function initWorkEntryPage() {
 		const companyId = companySelect.value;
 		const monthStart = getMonthStart();
 		if (!companyId || !monthStart) {
-			showErrorAlert('Select company and month');
+			showErrorAlert(t('messages.workEntriesSelectCompanyMonth'));
 			return;
 		}
 
@@ -248,10 +299,10 @@ export async function initWorkEntryPage() {
 				}
 			}
 
-			showSuccessMessage('Work entries saved');
+			showSuccessMessage(t('messages.workEntriesSaved'));
 			await refreshGrid();
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to save work entries');
+			showErrorAlert(err?.message || t('messages.workEntriesSaveFailed'));
 		}
 	}
 
@@ -259,7 +310,14 @@ export async function initWorkEntryPage() {
 		storeDefaultCompanyId(companySelect.value);
 		void refreshGrid();
 	});
-	monthInput.addEventListener('change', () => void refreshGrid());
+	monthSelect.addEventListener('change', () => {
+		syncMonthValue();
+		void refreshGrid();
+	});
+	yearSelect.addEventListener('change', () => {
+		syncMonthValue();
+		void refreshGrid();
+	});
 	sortByNameBtn.addEventListener('click', () => updateSort('name'));
 	sortByRateBtn.addEventListener('click', () => updateSort('hourly_rate'));
 	saveBtn.addEventListener('click', () => void saveAll());
@@ -268,6 +326,13 @@ export async function initWorkEntryPage() {
 	renderSortLabels();
 	await loadLookups();
 	await refreshGrid();
+
+	window.addEventListener('languagechange', () => {
+		renderMonthControls(monthInput.value);
+		renderSortLabels();
+		void loadLookups();
+		void refreshGrid();
+	});
 }
 
 void initWorkEntryPage();

@@ -7,10 +7,11 @@ import { getActivityFormData, setActivityFormData } from '../../components/activ
 import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatCurrency } from '../../utils/formatters.js';
 import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { t } from '../../utils/i18n.js';
 
 export async function initActivitiesPage() {
 	if (await redirectIfNotAuthenticated()) return;
-	await bootstrapPage({ title: 'Activities' });
+	await bootstrapPage({ title: t('title.activities') });
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
@@ -39,6 +40,13 @@ export async function initActivitiesPage() {
 	let editingActivityId = null;
 	let activitiesCache = [];
 	let sortState = { key: 'hourly_rate', direction: 'asc' };
+
+	function updateModalTitle() {
+		if (!modalTitleEl) return;
+		modalTitleEl.textContent = editingActivityId
+			? t('activities.modal.editTitle')
+			: t('activities.modal.newTitle');
+	}
 
 	function updateSort(key) {
 		if (sortState.key === key) {
@@ -76,7 +84,7 @@ export async function initActivitiesPage() {
 	function startNew() {
 		editingActivityId = null;
 		setActivityFormData(formMount, { name: '', hourly_rate: '' });
-		if (modalTitleEl) modalTitleEl.textContent = 'New activity';
+		updateModalTitle();
 	}
 
 	function startEdit(activityId) {
@@ -84,20 +92,20 @@ export async function initActivitiesPage() {
 		if (!activity) return false;
 		editingActivityId = activity.id;
 		setActivityFormData(formMount, activity);
-		if (modalTitleEl) modalTitleEl.textContent = 'Edit activity';
+		updateModalTitle();
 		return true;
 	}
 
 	async function removeActivity(activityId) {
-		const ok = confirmAction('Delete this activity?');
+		const ok = confirmAction(t('confirm.deleteActivity'));
 		if (!ok) return;
 		try {
 			await deleteActivity(activityId, onBehalfOfUserId);
-			showSuccessMessage('Activity deleted');
+			showSuccessMessage(t('messages.activityDeleted'));
 			await refreshList();
 			startNew();
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to delete activity');
+			showErrorAlert(err?.message || t('messages.activityDeleteFailed'));
 		}
 	}
 
@@ -107,21 +115,21 @@ export async function initActivitiesPage() {
 		renderDataTable(tableMount, {
 			columns: [
 				{
-					header: 'Name',
+					header: t('table.name'),
 					key: 'name',
 					sortable: true,
 					sortDirection: sortState.key === 'name' ? sortState.direction : null,
 					onHeaderClick: () => updateSort('name'),
 				},
 				{
-					header: 'Hourly rate (EUR)',
+					header: t('labels.hourlyRate'),
 					getValue: (row) => formatCurrency(Number(row.hourly_rate || 0)),
 					sortable: true,
 					sortDirection: sortState.key === 'hourly_rate' ? sortState.direction : null,
 					onHeaderClick: () => updateSort('hourly_rate'),
 				},
 				{
-					header: 'Actions',
+					header: t('table.actions'),
 					headerClassName: 'text-end',
 					className: 'text-end',
 					render: (row) => {
@@ -131,7 +139,7 @@ export async function initActivitiesPage() {
 						const editBtn = document.createElement('button');
 						editBtn.type = 'button';
 						editBtn.className = 'btn btn-sm btn-outline-primary';
-						editBtn.textContent = 'Edit';
+						editBtn.textContent = t('actions.edit');
 						editBtn.addEventListener('click', () => {
 							const started = startEdit(row.id);
 							if (started) activityModal?.show();
@@ -140,7 +148,7 @@ export async function initActivitiesPage() {
 						const delBtn = document.createElement('button');
 						delBtn.type = 'button';
 						delBtn.className = 'btn btn-sm btn-outline-danger';
-						delBtn.textContent = 'Delete';
+						delBtn.textContent = t('actions.delete');
 						delBtn.addEventListener('click', () => void removeActivity(row.id));
 
 						wrap.appendChild(editBtn);
@@ -150,7 +158,7 @@ export async function initActivitiesPage() {
 				}
 			],
 			rows: sortedActivities,
-			emptyText: 'No activities yet',
+			emptyText: t('table.noActivities'),
 		});
 	}
 
@@ -162,7 +170,7 @@ export async function initActivitiesPage() {
 			activitiesCache = data;
 			renderActivities(data);
 		} catch (err) {
-			showErrorAlert(err?.message || 'Failed to load activities');
+			showErrorAlert(err?.message || t('messages.activityLoadFailed'));
 		}
 	}
 
@@ -174,17 +182,17 @@ export async function initActivitiesPage() {
 				const data = getActivityFormData(formMount);
 				if (editingActivityId) {
 					await updateActivity(editingActivityId, data, onBehalfOfUserId);
-					showSuccessMessage('Activity updated');
+					showSuccessMessage(t('messages.activityUpdated'));
 				} else {
 					await createActivity(data, onBehalfOfUserId);
-					showSuccessMessage('Activity created');
+					showSuccessMessage(t('messages.activityCreated'));
 				}
 
 				await refreshList();
 				activityModal?.hide();
 				startNew();
 			} catch (err) {
-				showErrorAlert(err?.message || 'Failed to save activity');
+				showErrorAlert(err?.message || t('messages.activitySaveFailed'));
 			}
 		});
 	}
@@ -215,6 +223,11 @@ export async function initActivitiesPage() {
 
 	startNew();
 	await refreshList();
+
+	window.addEventListener('languagechange', () => {
+		renderActivities(activitiesCache);
+		updateModalTitle();
+	});
 }
 
 void initActivitiesPage();

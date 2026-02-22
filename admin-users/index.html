@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,28 +8,32 @@
   <link href="/src/styles/main.css" rel="stylesheet" />
   <link href="/src/pages/admin-users/admin-users.css" rel="stylesheet" />
 </head>
-<body class="page-admin-users">
+<body class="page-admin-users" data-i18n-title="title.adminUsers">
   <div id="app"></div>
 
   <template id="page-content-template">
     <section class="page-section">
-      <h1 class="h3 mb-3 page-title">User management</h1>
+      <h1 class="h3 mb-3 page-title" data-i18n="adminUsers.heading">User management</h1>
 
       <div class="card mb-4">
         <div class="card-body">
           <div class="input-group">
-            <input class="form-control" id="users-search" placeholder="Search by name" />
-            <button class="btn btn-outline-secondary" type="button" id="users-search-btn">Search</button>
-            <button class="btn btn-outline-secondary" type="button" id="users-clear-btn">Clear</button>
+            <input class="form-control" id="users-search" placeholder="Search by name" data-i18n-attr="placeholder:placeholders.searchByName" />
+            <button class="btn btn-outline-secondary" type="button" id="users-search-btn" data-i18n="actions.search">Search</button>
+            <button class="btn btn-outline-secondary" type="button" id="users-clear-btn" data-i18n="actions.clear">Clear</button>
           </div>
-          <div class="text-muted small mt-2">Creating users from the browser isn’t supported without server-side Admin API. Use <a href="/register">Register</a> to create freelancer users, then edit role here.</div>
+          <div class="text-muted small mt-2">
+            <span data-i18n="adminUsers.helper.prefix">Creating users from the browser isn’t supported without server-side Admin API. Use</span>
+            <a href="/register" data-i18n="actions.register">Register</a>
+            <span data-i18n="adminUsers.helper.suffix">to create freelancer users, then edit role here.</span>
+          </div>
         </div>
       </div>
 
       <div class="row g-4">
         <div class="col-12 col-lg-7">
           <div class="card">
-            <div class="card-header">Users</div>
+            <div class="card-header" data-i18n="adminUsers.usersCard">Users</div>
             <div class="card-body">
               <div id="users-table-mount"></div>
             </div>
@@ -38,28 +42,28 @@
 
         <div class="col-12 col-lg-5">
           <div class="card">
-            <div class="card-header">Edit user</div>
+            <div class="card-header" data-i18n="adminUsers.editCard">Edit user</div>
             <div class="card-body">
               <form id="user-edit-form">
                 <div class="mb-3">
-                  <label class="form-label" for="user-edit-id">User ID</label>
+                  <label class="form-label" for="user-edit-id" data-i18n="labels.userId">User ID</label>
                   <input class="form-control" id="user-edit-id" disabled />
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="user-edit-name">Full name</label>
+                  <label class="form-label" for="user-edit-name" data-i18n="labels.fullName">Full name</label>
                   <input class="form-control" id="user-edit-name" required />
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="user-edit-role">Role</label>
+                  <label class="form-label" for="user-edit-role" data-i18n="labels.role">Role</label>
                   <select class="form-select" id="user-edit-role">
-                    <option value="freelancer">freelancer</option>
-                    <option value="admin">admin</option>
+                    <option value="freelancer" data-i18n="options.role.freelancer">freelancer</option>
+                    <option value="admin" data-i18n="options.role.admin">admin</option>
                   </select>
                 </div>
 
                 <div class="d-flex gap-2">
-                  <button class="btn btn-primary" type="submit">Save</button>
-                  <button class="btn btn-outline-secondary" type="button" id="user-edit-cancel">Cancel</button>
+                  <button class="btn btn-primary" type="submit" data-i18n="actions.save">Save</button>
+                  <button class="btn btn-outline-secondary" type="button" id="user-edit-cancel" data-i18n="actions.cancel">Cancel</button>
                 </div>
               </form>
             </div>
