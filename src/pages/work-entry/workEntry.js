@@ -6,7 +6,9 @@ import { listActivities } from '../../services/activities.js';
 import { listWorkEntries, upsertWorkEntry, deleteWorkEntry } from '../../services/workEntries.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatCurrency } from '../../utils/formatters.js';
-import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
+
+const DEFAULT_COMPANY_STORAGE_PREFIX = 'workEntry.defaultCompanyId';
 
 export async function initWorkEntryPage() {
 	if (await redirectIfNotAuthenticated()) return;
@@ -14,6 +16,7 @@ export async function initWorkEntryPage() {
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
+	let currentUserId = null;
 	const { selectedUserId } = await initAdminUserSelector({
 		mountEl: adminMount,
 		onChange: async (userId) => {
@@ -23,6 +26,9 @@ export async function initWorkEntryPage() {
 		},
 	});
 	onBehalfOfUserId = selectedUserId || null;
+
+	const currentUser = await getCurrentUser();
+	currentUserId = currentUser?.id || null;
 
 	const formMount = document.querySelector('#work-entry-form-mount');
 	if (!formMount) return;
@@ -94,18 +100,46 @@ export async function initWorkEntryPage() {
 		monthInput.value = `${y}-${m}`;
 	}
 
+	function getStorageKey() {
+		const effectiveUserId = onBehalfOfUserId || currentUserId;
+		if (!effectiveUserId) return null;
+		return `${DEFAULT_COMPANY_STORAGE_PREFIX}:${effectiveUserId}`;
+	}
+
+	function getStoredDefaultCompanyId() {
+		const key = getStorageKey();
+		if (!key) return '';
+		return String(localStorage.getItem(key) || '');
+	}
+
+	function storeDefaultCompanyId(companyId) {
+		const key = getStorageKey();
+		if (!key) return;
+
+		if (!companyId) {
+			localStorage.removeItem(key);
+			return;
+		}
+
+		localStorage.setItem(key, String(companyId));
+	}
+
 	async function loadLookups() {
 		try {
 			companies = await listCompanies(onBehalfOfUserId);
 			activities = await listActivities(onBehalfOfUserId);
+			const defaultCompanyId = getStoredDefaultCompanyId();
+			const hasDefaultCompany = defaultCompanyId && companies.some((c) => String(c.id) === defaultCompanyId);
+			const selectedCompanyId = hasDefaultCompany
+				? defaultCompanyId
+				: (companies.length > 0 ? String(companies[0].id) : '');
 
 			companySelect.innerHTML = '<option value="">Select company...</option>' + companies
 				.map((c) => `<option value="${c.id}">${c.name}</option>`)
 				.join('');
 
-			if (!companySelect.value && companies.length > 0) {
-				companySelect.value = companies[0].id;
-			}
+			companySelect.value = selectedCompanyId;
+			storeDefaultCompanyId(selectedCompanyId);
 		} catch (err) {
 			showErrorAlert(err?.message || 'Failed to load companies/activities');
 		}
@@ -189,7 +223,10 @@ export async function initWorkEntryPage() {
 		}
 	}
 
-	companySelect.addEventListener('change', () => void refreshGrid());
+	companySelect.addEventListener('change', () => {
+		storeDefaultCompanyId(companySelect.value);
+		void refreshGrid();
+	});
 	monthInput.addEventListener('change', () => void refreshGrid());
 	sortByNameBtn.addEventListener('click', () => updateSort('name'));
 	sortByRateBtn.addEventListener('click', () => updateSort('hourly_rate'));
