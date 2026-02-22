@@ -6,7 +6,9 @@ import { generateReportData, saveGeneratedReport } from '../../services/reportGe
 import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath } from '../../services/pdfGenerator.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatDate } from '../../utils/formatters.js';
-import { redirectIfNotAuthenticated } from '../../services/auth.js';
+import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
+
+const DEFAULT_COMPANY_STORAGE_PREFIX = 'workEntry.defaultCompanyId';
 
 function getMonthStartFromInput(monthValue) {
 	const v = String(monthValue || '').trim();
@@ -19,7 +21,8 @@ export async function initReportsPage() {
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
-	await initAdminUserSelector({
+	let currentUserId = null;
+	const { selectedUserId } = await initAdminUserSelector({
 		mountEl: adminMount,
 		onChange: async (userId) => {
 			onBehalfOfUserId = userId;
@@ -27,6 +30,10 @@ export async function initReportsPage() {
 			await loadConfigForSelectedCompany();
 		},
 	});
+	onBehalfOfUserId = selectedUserId || null;
+
+	const currentUser = await getCurrentUser();
+	currentUserId = currentUser?.id || null;
 
 	const companyEl = document.querySelector('#report-company');
 	const templateEl = document.querySelector('#report-template');
@@ -44,12 +51,41 @@ export async function initReportsPage() {
 	monthEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 	dateEl.value = formatDate(now);
 
+	function getStorageKey() {
+		const effectiveUserId = onBehalfOfUserId || currentUserId;
+		if (!effectiveUserId) return null;
+		return `${DEFAULT_COMPANY_STORAGE_PREFIX}:${effectiveUserId}`;
+	}
+
+	function getStoredDefaultCompanyId() {
+		const key = getStorageKey();
+		if (!key) return '';
+		return String(localStorage.getItem(key) || '');
+	}
+
+	function storeDefaultCompanyId(companyId) {
+		const key = getStorageKey();
+		if (!key) return;
+
+		if (!companyId) {
+			localStorage.removeItem(key);
+			return;
+		}
+
+		localStorage.setItem(key, String(companyId));
+	}
+
 	async function loadLookups() {
 		try {
 			const [companies, templates] = await Promise.all([
 				listCompanies(onBehalfOfUserId),
 				listReportTemplates(),
 			]);
+			const defaultCompanyId = getStoredDefaultCompanyId();
+			const hasDefaultCompany = defaultCompanyId && companies.some((c) => String(c.id) === defaultCompanyId);
+			const selectedCompanyId = hasDefaultCompany
+				? defaultCompanyId
+				: (companies.length > 0 ? String(companies[0].id) : '');
 
 			companyEl.innerHTML = '<option value="">Select company...</option>' + companies
 				.map((c) => `<option value="${c.id}">${c.name}</option>`)
@@ -59,7 +95,8 @@ export async function initReportsPage() {
 				.map((t) => `<option value="${t.id}">${t.name}</option>`)
 				.join('');
 
-			if (!companyEl.value && companies.length > 0) companyEl.value = companies[0].id;
+			companyEl.value = selectedCompanyId;
+			storeDefaultCompanyId(selectedCompanyId);
 		} catch (err) {
 			showErrorAlert(err?.message || 'Failed to load companies/templates');
 		}
@@ -145,7 +182,10 @@ export async function initReportsPage() {
 		}
 	}
 
-	companyEl.addEventListener('change', () => void loadConfigForSelectedCompany());
+	companyEl.addEventListener('change', () => {
+		storeDefaultCompanyId(companyEl.value);
+		void loadConfigForSelectedCompany();
+	});
 	configForm.addEventListener('submit', (e) => {
 		e.preventDefault();
 		void saveConfig();
