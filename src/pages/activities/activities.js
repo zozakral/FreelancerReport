@@ -26,7 +26,11 @@ export async function initActivitiesPage() {
 
 	const tableMount = document.querySelector('#activities-table-mount');
 	const formMount = document.querySelector('#activity-form-mount');
-	if (!tableMount || !formMount) return;
+	const modalEl = document.querySelector('#activity-form-modal');
+	const modalTitleEl = document.querySelector('#activity-form-modal-title');
+	if (!tableMount || !formMount || !modalEl) return;
+
+	const activityModal = window.bootstrap?.Modal ? new window.bootstrap.Modal(modalEl) : null;
 
 	await loadComponent({ name: 'dataTable', mountEl: tableMount });
 	await loadComponent({ name: 'activityForm', mountEl: formMount });
@@ -37,13 +41,16 @@ export async function initActivitiesPage() {
 	function startNew() {
 		editingActivityId = null;
 		setActivityFormData(formMount, { name: '', hourly_rate: '' });
+		if (modalTitleEl) modalTitleEl.textContent = 'New activity';
 	}
 
 	function startEdit(activityId) {
 		const activity = activitiesCache.find((a) => a.id === activityId);
-		if (!activity) return;
+		if (!activity) return false;
 		editingActivityId = activity.id;
 		setActivityFormData(formMount, activity);
+		if (modalTitleEl) modalTitleEl.textContent = 'Edit activity';
+		return true;
 	}
 
 	async function removeActivity(activityId) {
@@ -79,7 +86,10 @@ export async function initActivitiesPage() {
 						editBtn.type = 'button';
 						editBtn.className = 'btn btn-sm btn-outline-primary';
 						editBtn.textContent = 'Edit';
-						editBtn.addEventListener('click', () => startEdit(row.id));
+						editBtn.addEventListener('click', () => {
+							const started = startEdit(row.id);
+							if (started) activityModal?.show();
+						});
 
 						const delBtn = document.createElement('button');
 						delBtn.type = 'button';
@@ -125,6 +135,7 @@ export async function initActivitiesPage() {
 				}
 
 				await refreshList();
+				activityModal?.hide();
 				startNew();
 			} catch (err) {
 				showErrorAlert(err?.message || 'Failed to save activity');
@@ -132,11 +143,17 @@ export async function initActivitiesPage() {
 		});
 	}
 
-	const newBtn = document.querySelector('#activity-new-btn');
-	newBtn?.addEventListener('click', () => startNew());
+	const cancelBtn = formMount.querySelector('#activity-cancel-btn');
+	cancelBtn?.addEventListener('click', () => {
+		startNew();
+		activityModal?.hide();
+	});
 
-	const cancelBtn = document.querySelector('#activity-cancel-btn');
-	cancelBtn?.addEventListener('click', () => startNew());
+	const newBtn = document.querySelector('#activity-new-btn');
+	newBtn?.addEventListener('click', () => {
+		startNew();
+		activityModal?.show();
+	});
 
 	const searchEl = document.querySelector('#activity-search');
 	const searchBtn = document.querySelector('#activity-search-btn');

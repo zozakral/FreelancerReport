@@ -25,7 +25,11 @@ export async function initCompaniesPage() {
 
 	const tableMount = document.querySelector('#companies-table-mount');
 	const formMount = document.querySelector('#company-form-mount');
-	if (!tableMount || !formMount) return;
+	const modalEl = document.querySelector('#company-form-modal');
+	const modalTitleEl = document.querySelector('#company-form-modal-title');
+	if (!tableMount || !formMount || !modalEl) return;
+
+	const companyModal = window.bootstrap?.Modal ? new window.bootstrap.Modal(modalEl) : null;
 
 	await loadComponent({ name: 'dataTable', mountEl: tableMount });
 	await loadComponent({ name: 'companyForm', mountEl: formMount });
@@ -36,13 +40,16 @@ export async function initCompaniesPage() {
 	function startNew() {
 		editingCompanyId = null;
 		setCompanyFormData(formMount, { name: '', tax_number: '', city: '' });
+		if (modalTitleEl) modalTitleEl.textContent = 'New company';
 	}
 
 	function startEdit(companyId) {
 		const company = companiesCache.find((c) => c.id === companyId);
-		if (!company) return;
+		if (!company) return false;
 		editingCompanyId = company.id;
 		setCompanyFormData(formMount, company);
+		if (modalTitleEl) modalTitleEl.textContent = 'Edit company';
+		return true;
 	}
 
 	async function removeCompany(companyId) {
@@ -76,7 +83,10 @@ export async function initCompaniesPage() {
 						editBtn.type = 'button';
 						editBtn.className = 'btn btn-sm btn-outline-primary';
 						editBtn.textContent = 'Edit';
-						editBtn.addEventListener('click', () => startEdit(row.id));
+						editBtn.addEventListener('click', () => {
+							const started = startEdit(row.id);
+							if (started) companyModal?.show();
+						});
 
 						const delBtn = document.createElement('button');
 						delBtn.type = 'button';
@@ -122,6 +132,7 @@ export async function initCompaniesPage() {
 				}
 
 				await refreshList();
+				companyModal?.hide();
 				startNew();
 			} catch (err) {
 				showErrorAlert(err?.message || 'Failed to save company');
@@ -129,11 +140,17 @@ export async function initCompaniesPage() {
 		});
 	}
 
-	const newBtn = document.querySelector('#company-new-btn');
-	newBtn?.addEventListener('click', () => startNew());
+	const cancelBtn = formMount.querySelector('#company-cancel-btn');
+	cancelBtn?.addEventListener('click', () => {
+		startNew();
+		companyModal?.hide();
+	});
 
-	const cancelBtn = document.querySelector('#company-cancel-btn');
-	cancelBtn?.addEventListener('click', () => startNew());
+	const newBtn = document.querySelector('#company-new-btn');
+	newBtn?.addEventListener('click', () => {
+		startNew();
+		companyModal?.show();
+	});
 
 	const searchEl = document.querySelector('#company-search');
 	const searchBtn = document.querySelector('#company-search-btn');
