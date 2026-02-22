@@ -1,12 +1,3 @@
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-
 export function renderDataTable(rootEl, { columns = [], rows = [], emptyText = 'No data' } = {}) {
   const headRow = rootEl.querySelector('#data-table-head-row');
   const bodyEl = rootEl.querySelector('#data-table-body');
@@ -16,12 +7,32 @@ export function renderDataTable(rootEl, { columns = [], rows = [], emptyText = '
     throw new Error('DataTable: missing required elements');
   }
 
-  headRow.innerHTML = columns
-    .map((c) => {
-      const cls = c.headerClassName ? ` class="${escapeHtml(c.headerClassName)}"` : '';
-      return `<th scope="col"${cls}>${escapeHtml(c.header || '')}</th>`;
-    })
-    .join('');
+  headRow.innerHTML = '';
+  columns.forEach((c) => {
+    const th = document.createElement('th');
+    th.scope = 'col';
+    if (c.headerClassName) th.className = c.headerClassName;
+
+    if (c.sortable && typeof c.onHeaderClick === 'function') {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-link p-0 border-0 text-decoration-none text-reset fw-semibold';
+
+      const directionIndicator = c.sortDirection === 'asc'
+        ? ' ↑'
+        : c.sortDirection === 'desc'
+          ? ' ↓'
+          : '';
+
+      btn.textContent = `${c.header || ''}${directionIndicator}`;
+      btn.addEventListener('click', () => c.onHeaderClick());
+      th.appendChild(btn);
+    } else {
+      th.textContent = c.header || '';
+    }
+
+    headRow.appendChild(th);
+  });
 
   bodyEl.innerHTML = '';
   rows.forEach((row) => {

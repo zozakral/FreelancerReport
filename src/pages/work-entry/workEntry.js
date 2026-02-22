@@ -33,11 +33,53 @@ export async function initWorkEntryPage() {
 	const monthInput = formMount.querySelector('#work-entry-month');
 	const rowsBody = formMount.querySelector('#work-entry-rows');
 	const saveBtn = formMount.querySelector('#work-entry-save');
-	if (!companySelect || !monthInput || !rowsBody || !saveBtn) return;
+	const sortByNameBtn = formMount.querySelector('#work-entry-sort-name');
+	const sortByRateBtn = formMount.querySelector('#work-entry-sort-rate');
+	if (!companySelect || !monthInput || !rowsBody || !saveBtn || !sortByNameBtn || !sortByRateBtn) return;
 
 	let companies = [];
 	let activities = [];
 	let entriesByActivityId = new Map();
+	let sortState = { key: 'hourly_rate', direction: 'asc' };
+
+	function renderSortLabels() {
+		sortByNameBtn.textContent = `Activity${sortState.key === 'name' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
+		sortByRateBtn.textContent = `Rate/Hour${sortState.key === 'hourly_rate' ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : ''}`;
+	}
+
+	function updateSort(key) {
+		if (sortState.key === key) {
+			sortState = {
+				key,
+				direction: sortState.direction === 'asc' ? 'desc' : 'asc',
+			};
+		} else {
+			sortState = { key, direction: 'asc' };
+		}
+
+		renderSortLabels();
+		void refreshGrid();
+	}
+
+	function getSortedActivities() {
+		const sorted = [...activities];
+		sorted.sort((left, right) => {
+			if (sortState.key === 'name') {
+				const leftName = String(left.name || '').toLocaleLowerCase();
+				const rightName = String(right.name || '').toLocaleLowerCase();
+				if (leftName < rightName) return sortState.direction === 'asc' ? -1 : 1;
+				if (leftName > rightName) return sortState.direction === 'asc' ? 1 : -1;
+				return 0;
+			}
+
+			const leftRate = Number(left.hourly_rate || 0);
+			const rightRate = Number(right.hourly_rate || 0);
+			if (leftRate < rightRate) return sortState.direction === 'asc' ? -1 : 1;
+			if (leftRate > rightRate) return sortState.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+		return sorted;
+	}
 
 	function getMonthStart() {
 		const v = String(monthInput.value || '').trim();
@@ -81,7 +123,7 @@ export async function initWorkEntryPage() {
 			const existing = await listWorkEntries(companyId, monthStart, onBehalfOfUserId);
 			existing.forEach((e) => entriesByActivityId.set(e.activity_id, e));
 
-			activities.forEach((activity) => {
+			getSortedActivities().forEach((activity) => {
 				const existingEntry = entriesByActivityId.get(activity.id);
 
 				const tr = document.createElement('tr');
@@ -149,9 +191,12 @@ export async function initWorkEntryPage() {
 
 	companySelect.addEventListener('change', () => void refreshGrid());
 	monthInput.addEventListener('change', () => void refreshGrid());
+	sortByNameBtn.addEventListener('click', () => updateSort('name'));
+	sortByRateBtn.addEventListener('click', () => updateSort('hourly_rate'));
 	saveBtn.addEventListener('click', () => void saveAll());
 
 	setDefaultMonth();
+	renderSortLabels();
 	await loadLookups();
 	await refreshGrid();
 }

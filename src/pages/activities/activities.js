@@ -38,6 +38,40 @@ export async function initActivitiesPage() {
 
 	let editingActivityId = null;
 	let activitiesCache = [];
+	let sortState = { key: 'hourly_rate', direction: 'asc' };
+
+	function updateSort(key) {
+		if (sortState.key === key) {
+			sortState = {
+				key,
+				direction: sortState.direction === 'asc' ? 'desc' : 'asc',
+			};
+		} else {
+			sortState = { key, direction: 'asc' };
+		}
+		renderActivities(activitiesCache);
+	}
+
+	function getSortedActivities(activities) {
+		const sorted = [...activities];
+		sorted.sort((left, right) => {
+			if (sortState.key === 'name') {
+				const leftName = String(left.name || '').toLocaleLowerCase();
+				const rightName = String(right.name || '').toLocaleLowerCase();
+				if (leftName < rightName) return sortState.direction === 'asc' ? -1 : 1;
+				if (leftName > rightName) return sortState.direction === 'asc' ? 1 : -1;
+				return 0;
+			}
+
+			const leftRate = Number(left.hourly_rate || 0);
+			const rightRate = Number(right.hourly_rate || 0);
+			if (leftRate < rightRate) return sortState.direction === 'asc' ? -1 : 1;
+			if (leftRate > rightRate) return sortState.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+
+		return sorted;
+	}
 
 	function startNew() {
 		editingActivityId = null;
@@ -68,12 +102,23 @@ export async function initActivitiesPage() {
 	}
 
 	function renderActivities(activities) {
+		const sortedActivities = getSortedActivities(activities);
+
 		renderDataTable(tableMount, {
 			columns: [
-				{ header: 'Name', key: 'name' },
+				{
+					header: 'Name',
+					key: 'name',
+					sortable: true,
+					sortDirection: sortState.key === 'name' ? sortState.direction : null,
+					onHeaderClick: () => updateSort('name'),
+				},
 				{
 					header: 'Hourly rate',
 					getValue: (row) => formatCurrency(Number(row.hourly_rate || 0)),
+					sortable: true,
+					sortDirection: sortState.key === 'hourly_rate' ? sortState.direction : null,
+					onHeaderClick: () => updateSort('hourly_rate'),
 				},
 				{
 					header: 'Actions',
@@ -104,7 +149,7 @@ export async function initActivitiesPage() {
 					}
 				}
 			],
-			rows: activities,
+			rows: sortedActivities,
 			emptyText: 'No activities yet',
 		});
 	}
