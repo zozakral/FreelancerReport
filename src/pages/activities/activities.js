@@ -15,7 +15,7 @@ export async function initActivitiesPage() {
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
 
-	await initAdminUserSelector({
+	const { selectedUserId } = await initAdminUserSelector({
 		mountEl: adminMount,
 		onChange: async (userId) => {
 			onBehalfOfUserId = userId;
@@ -23,6 +23,7 @@ export async function initActivitiesPage() {
 			startNew();
 		},
 	});
+	onBehalfOfUserId = selectedUserId || null;
 
 	const tableMount = document.querySelector('#activities-table-mount');
 	const formMount = document.querySelector('#activity-form-mount');

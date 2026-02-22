@@ -14,7 +14,7 @@ export async function initWorkEntryPage() {
 
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
-	await initAdminUserSelector({
+	const { selectedUserId } = await initAdminUserSelector({
 		mountEl: adminMount,
 		onChange: async (userId) => {
 			onBehalfOfUserId = userId;
@@ -22,6 +22,7 @@ export async function initWorkEntryPage() {
 			await refreshGrid();
 		},
 	});
+	onBehalfOfUserId = selectedUserId || null;
 
 	const formMount = document.querySelector('#work-entry-form-mount');
 	if (!formMount) return;

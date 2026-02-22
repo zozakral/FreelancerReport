@@ -14,7 +14,7 @@ export async function initCompaniesPage() {
 	const adminMount = document.querySelector('#admin-user-selector-mount');
 	let onBehalfOfUserId = null;
 
-	await initAdminUserSelector({
+	const { selectedUserId } = await initAdminUserSelector({
 		mountEl: adminMount,
 		onChange: async (userId) => {
 			onBehalfOfUserId = userId;
@@ -22,6 +22,7 @@ export async function initCompaniesPage() {
 			startNew();
 		},
 	});
+	onBehalfOfUserId = selectedUserId || null;
 
 	const tableMount = document.querySelector('#companies-table-mount');
 	const formMount = document.querySelector('#company-form-mount');
