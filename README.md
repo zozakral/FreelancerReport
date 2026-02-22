@@ -41,7 +41,7 @@ FreelancerReport/
 │   ├── components/                # HTML fragment components (header/footer/etc.)
 │   ├── config/                    # Supabase client setup
 │   ├── core/                      # Shell + component loading
-│   ├── pages/                     # Page implementations (HTML/CSS/JS)
+│   ├── pages/                     # Page modules (JS/CSS only)
 │   ├── services/                  # All Supabase interactions
 │   ├── styles/
 │   └── utils/
@@ -60,6 +60,12 @@ FreelancerReport/
 ├── vite.config.js
 └── .env.example
 ```
+
+### HTML Entrypoints (Important)
+
+- Route HTML entry files are only the top-level `*/index.html` files (for example `companies/index.html`, `reports/index.html`, `login/index.html`).
+- Files under `src/pages/` are for page JavaScript and styles, not standalone HTML entry files.
+- Do not add duplicate page HTML under `src/pages/**`; Vite routing/build is configured to use top-level route folders.
 
 ## Setup Instructions
 
