@@ -12,7 +12,8 @@ async function getPdfMake() {
         import('pdfmake/build/vfs_fonts'),
       ]);
 
-      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      // Access vfs directly from pdfFonts (not pdfFonts.pdfMake.vfs)
+      pdfMake.vfs = pdfFonts.vfs || pdfFonts.pdfMake?.vfs || pdfFonts;
       return pdfMake;
     })();
   }
