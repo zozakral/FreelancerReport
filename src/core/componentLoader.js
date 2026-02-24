@@ -1,5 +1,11 @@
 import { applyTranslations } from '../utils/i18n.js';
 
+const COMPONENT_ASSETS = import.meta.glob('/src/components/**/*.{html,css}', {
+  eager: true,
+  as: 'url',
+});
+const COMPONENT_MODULES = import.meta.glob('/src/components/**/*.js');
+
 const LOADED_CSS_HREFS = new Set();
 
 function ensureStylesheet(href) {
@@ -42,14 +48,20 @@ export async function loadComponent({
   if (!name) throw new Error('Component name is required');
   if (!mountEl) throw new Error(`Mount element is required for component: ${name}`);
 
-  ensureStylesheet(cssUrl);
+  const resolvedHtmlUrl = COMPONENT_ASSETS[htmlUrl] || htmlUrl;
+  const resolvedCssUrl = COMPONENT_ASSETS[cssUrl] || cssUrl;
+  const resolvedJsImporter = COMPONENT_MODULES[jsUrl];
 
-  const html = await fetchText(htmlUrl);
+  ensureStylesheet(resolvedCssUrl);
+
+  const html = await fetchText(resolvedHtmlUrl);
   mountEl.innerHTML = html;
   applyTranslations(mountEl);
 
   if (initExport) {
-    const mod = await import(/* @vite-ignore */ jsUrl);
+    const mod = resolvedJsImporter
+      ? await resolvedJsImporter()
+      : await import(/* @vite-ignore */ jsUrl);
     const initFn = mod?.[initExport];
     if (typeof initFn === 'function') {
       await initFn(mountEl, ...initArgs);
