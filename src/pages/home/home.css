@@ -4,3 +4,36 @@
 .page-home .page-title {
 	font-size: 1.85rem;
 }
+
+.home-summary {
+	background: var(--surface-1);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-soft);
+}
+
+.home-lead {
+	font-size: 1.05rem;
+	line-height: 1.6;
+	max-width: 60ch;
+}
+
+.home-feature {
+	background: var(--surface-2);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius-sm);
+	padding: 1rem;
+}
+
+.home-feature .h6 {
+	font-weight: 700;
+}
+
+.home-flow {
+	margin: 0;
+	padding-left: 1.2rem;
+}
+
+.home-flow li + li {
+	margin-top: 0.5rem;
+}
