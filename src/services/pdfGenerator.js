@@ -1,10 +1,10 @@
 import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { formatCurrency } from '../utils/formatters.js';
-import ibmPlexSansRegularUrl from '../assets/fonts/pdf/IBMPlexSans-Regular.woff2?url';
-import ibmPlexSansBoldUrl from '../assets/fonts/pdf/IBMPlexSans-Bold.woff2?url';
-import ibmPlexSansItalicUrl from '../assets/fonts/pdf/IBMPlexSans-Italic.woff2?url';
-import ibmPlexSansBoldItalicUrl from '../assets/fonts/pdf/IBMPlexSans-BoldItalic.woff2?url';
+// import ibmPlexSansRegularUrl from '../assets/fonts/pdf/IBMPlexSans-Regular.woff2?url';
+// import ibmPlexSansBoldUrl from '../assets/fonts/pdf/IBMPlexSans-Bold.woff2?url';
+// import ibmPlexSansItalicUrl from '../assets/fonts/pdf/IBMPlexSans-Italic.woff2?url';
+// import ibmPlexSansBoldItalicUrl from '../assets/fonts/pdf/IBMPlexSans-BoldItalic.woff2?url';
 
 let pdfMakeReadyPromise = null;
 let customFontRegistrationAttempted = false;
