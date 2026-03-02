@@ -1,158 +1,218 @@
 # Work Reporting Web Application
 
-A web application that helps freelancers track completed work and generate monthly work reports.
+Multi-page web application for freelancers to manage monthly work data and generate PDF reports.
 
 ## Overview
 
-This application enables freelancers to:
-- Define companies they work for
-- Define work activities with hourly rates
-- Log worked hours by company and month
-- Generate structured monthly work reports based on predefined templates
-- Export reports as PDF documents
-- Use the app in two languages: Bulgarian (default) and English
+The app supports:
+- Company management
+- Activity management with hourly rates
+- Monthly work entry by company/activity
+- Report configuration and PDF generation
+- Optional PDF upload to Supabase Storage
+- Role-based access (freelancer/admin)
+- UI localization (Bulgarian default, English available)
+
+## Implemented Frontend (Current)
+
+### Routes and pages
+
+| Route | Purpose | Main module |
+| --- | --- | --- |
+| `/` | Public landing page | `src/pages/home/home.js` |
+| `/login` | Sign in form | `src/pages/login/login.js` |
+| `/register` | Sign up form | `src/pages/register/register.js` |
+| `/dashboard` | Authenticated landing page | `src/pages/dashboard/dashboard.js` |
+| `/profile` | View/update current user profile | `src/pages/profile/profile.js` |
+| `/companies` | Company CRUD + search (admin impersonation supported) | `src/pages/companies/companies.js` |
+| `/activities` | Activity CRUD + search + sorting (admin impersonation supported) | `src/pages/activities/activities.js` |
+| `/work-entry` | Monthly hours grid, totals (hours/days/amount), upsert/delete entries | `src/pages/work-entry/workEntry.js` |
+| `/reports` | Report config, template selection, generate/download/save PDF | `src/pages/reports/reports.js` |
+| `/admin-dashboard` | Admin-only page shell entry | `src/pages/admin-dashboard/adminDashboard.js` |
+| `/admin-users` | Admin-only user list/search/edit/delete | `src/pages/admin-users/adminUsers.js` |
+
+### Frontend behavior
+
+- Multi-page architecture (top-level route folders with `index.html`)
+- Shared shell/bootstrap (`bootstrapPage`) and reusable components
+- Admin impersonation via global user selector on supported pages
+- Form-first CRUD UX with Bootstrap modals for edit/create where applicable
+- Month/year controls on work-entry and reports pages
+- Client-side PDF generation (`pdfmake`) with optional storage upload
 
 ## Tech Stack
 
 ### Frontend
-- **HTML, CSS, JavaScript** - Vanilla JavaScript (no frameworks)
-- **Vite** - Build tool and development server
-- **Bootstrap 5** - UI framework for responsive design
+- HTML, CSS, JavaScript (Vanilla, ES modules)
+- Vite 5
+- Bootstrap 5
 
-### Backend
-- **Supabase Database** - PostgreSQL database with all application data
-- **Supabase Auth** - Authentication (registration, login, logout)
-- **Supabase Storage** - File storage for generated PDF reports
-- **Supabase RLS** - Row Level Security for data access control
+### Backend (Supabase)
+- Postgres database
+- Supabase Auth
+- Supabase Storage (`work-reports` bucket)
+- Row Level Security (RLS)
 
-### PDF Generation
-- **pdfmake** - Client-side PDF generation library
+### PDF
+- pdfmake
 
 ## Project Structure
 
 ```
 FreelancerReport/
-├── .github/
-│   └── copilot-instructions.md
 ├── docs/
-│   ├── database-schema.md
-│   └── api-services.md
+│   ├── api-services.md
+│   └── database-schema.md
 ├── src/
-│   ├── assets/
-│   ├── components/                # HTML fragment components (header/footer/etc.)
-│   ├── config/                    # Supabase client setup
-│   ├── core/                      # Shell + component loading
-│   ├── pages/                     # Page modules (JS/CSS only)
-│   ├── services/                  # All Supabase interactions
+│   ├── components/
+│   ├── config/
+│   ├── core/
+│   ├── pages/
+│   ├── services/
 │   ├── styles/
 │   └── utils/
-├── admin-dashboard/index.html     # /admin-dashboard (clean URL entrypoint)
-├── admin-users/index.html         # /admin-users (clean URL entrypoint)
-├── activities/index.html          # /activities (clean URL entrypoint)
-├── companies/index.html           # /companies (clean URL entrypoint)
-├── dashboard/index.html           # /dashboard (clean URL entrypoint)
-├── login/index.html               # /login (clean URL entrypoint)
-├── profile/index.html             # /profile (clean URL entrypoint)
-├── register/index.html            # /register (clean URL entrypoint)
-├── reports/index.html             # /reports (clean URL entrypoint)
-├── work-entry/index.html          # /work-entry (clean URL entrypoint)
-├── index.html                     # Landing page
+├── supabase/
+│   ├── migrations/
+│   └── seed/
+├── activities/index.html
+├── admin-dashboard/index.html
+├── admin-users/index.html
+├── companies/index.html
+├── dashboard/index.html
+├── login/index.html
+├── profile/index.html
+├── register/index.html
+├── reports/index.html
+├── work-entry/index.html
+├── index.html
 ├── package.json
 ├── vite.config.js
 └── .env.example
 ```
 
-### HTML Entrypoints (Important)
+## Setup
 
-- Route HTML entry files are only the top-level `*/index.html` files (for example `companies/index.html`, `reports/index.html`, `login/index.html`).
-- Files under `src/pages/` are for page JavaScript and styles, not standalone HTML entry files.
-- Do not add duplicate page HTML under `src/pages/**`; Vite routing/build is configured to use top-level route folders.
-
-## Setup Instructions
-
-### 1. Install Dependencies
+### 1) Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Configure Supabase
+### 2) Configure environment
 
-1. Create a Supabase project at https://supabase.com
-2. Copy `.env.example` to `.env`
-3. Add your Supabase credentials to `.env`:
-   ```
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+Copy `.env.example` to `.env` and set:
 
-### 3. Run Database Migrations
-
-```bash
-# If using Supabase CLI locally
-supabase start
-supabase db reset
-
-# Or run migrations directly in Supabase Studio SQL editor
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-Execute migration scripts from `supabase/migrations/` in order.
+### 3) Apply database migrations
 
-### 4. Seed Report Templates
+```bash
+supabase start
+supabase db reset
+```
 
-Run the seed script from `supabase/seed/templates.sql` in Supabase Studio SQL editor.
+Or execute SQL migration files from `supabase/migrations/` in order inside Supabase SQL Editor.
 
-### 5. Start Development Server
+### 4) Seed report templates
+
+Execute `supabase/seed/templates.sql` (or Bulgarian template seed files, if needed).
+
+### 5) Run app
 
 ```bash
 npm run dev
 ```
 
-The application will open at http://localhost:3000
+Dev server: `http://localhost:3000`
 
-## User Roles
+## Database Schema (Implemented)
 
-### Freelancer (Default)
-- Manage own companies, activities, and work entries
-- Generate and download work reports
-- View and edit profile
+### Entity relationships
 
-### Admin
-- All Freelancer capabilities
-- Manage all users (create, edit, delete)
-- Access all data across all users
-- Operate on behalf of any freelancer using user selector dropdown
+```text
+auth.users (Supabase)
+   1 ─── 1 profiles
+profiles
+   1 ─── * companies
+   1 ─── * activities
+   1 ─── * work_entries
+   1 ─── * report_configs
+   1 ─── * generated_reports
 
-## Key Features
+companies
+   1 ─── * work_entries
+   1 ─── * generated_reports
+   1 ─── 1 report_configs (per user+company)
 
-### Admin Impersonation
-Admin users can select any freelancer from a dropdown at the top of admin pages. All operations will be performed on behalf of the selected user.
+report_templates
+   1 ─── * report_configs
 
-### PDF Report Generation
-Reports can be:
-- **Downloaded immediately** - Generate and download without saving
-- **Saved to storage** - Upload to Supabase Storage for later access
+activities
+   1 ─── * work_entries
+```
 
-### Work Entry Management
-- One work entry per activity per company per month
-- Automatic calculation of totals based on hours × hourly rate
-- Easy editing and updating of monthly work data
+### Tables
 
-### Language Support
-- The application supports Bulgarian and English
-- Bulgarian is the default language
+#### `profiles`
+- PK: `id` (FK to `auth.users.id`)
+- Columns: `role` (`freelancer|admin`), `full_name`, timestamps
+- Purpose: role + display identity for app users
 
-## Architecture Decisions
+#### `companies`
+- PK: `id`
+- FK: `user_id -> profiles.id`
+- Columns: `name`, `tax_number`, `city`, timestamps
+- Purpose: user-scoped client/company catalog
 
-See [.github/copilot-instructions.md](.github/copilot-instructions.md) for detailed architecture and coding conventions.
+#### `activities`
+- PK: `id`
+- FK: `user_id -> profiles.id`
+- Columns: `name`, `hourly_rate > 0`, timestamps
+- Purpose: user-scoped activity catalog and pricing
 
-## Database Schema
+#### `report_templates`
+- PK: `id`
+- Columns: `name` (unique), `description`, `template_definition` (JSONB), `styles` (JSONB), `created_at`
+- Purpose: global PDF template definitions
 
-See [docs/database-schema.md](docs/database-schema.md) for complete database design and relationships.
+#### `report_configs`
+- PK: `id`
+- FK: `user_id -> profiles.id`, `company_id -> companies.id`, `template_id -> report_templates.id`
+- Columns: `intro_text`, `outro_text`, `location`, timestamps
+- Constraint: `UNIQUE(user_id, company_id)`
+- Purpose: one report configuration per user/company
 
-## API Services
+#### `work_entries`
+- PK: `id`
+- FK: `user_id -> profiles.id`, `activity_id -> activities.id`, `company_id -> companies.id`
+- Columns: `month` (DATE, month start), `hours > 0`, timestamps
+- Constraint: `UNIQUE(user_id, activity_id, company_id, month)`
+- Purpose: monthly tracked hours per activity and company
 
-See [docs/api-services.md](docs/api-services.md) for service layer architecture and patterns.
+#### `generated_reports`
+- PK: `id`
+- FK: `user_id -> profiles.id`, `company_id -> companies.id`
+- Columns: `report_period`, `report_date`, `file_path`, `save_to_storage`, `created_at`
+- Purpose: metadata/audit for generated reports
+
+### Security model
+
+- RLS enabled on all application tables
+- Access pattern: owner rows (`user_id = auth.uid()`) or admin (`is_admin()`)
+- `report_templates`: authenticated users can `SELECT`; only admins can mutate
+- Storage bucket: `work-reports` (private) with policies by first folder segment (`{user_id}/...`) or admin override
+
+## Service Layer
+
+- Service modules are in `src/services/` (`auth`, `users`, `profiles`, `companies`, `activities`, `workEntries`, `reportConfigs`, `reportGenerator`, `pdfGenerator`)
+- All page modules consume services; pages do not query Supabase directly
+
+See detailed docs:
+- [API services](docs/api-services.md)
+- [Database schema](docs/database-schema.md)
 
 ## License
 
