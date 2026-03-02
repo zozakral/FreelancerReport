@@ -1,8 +1,93 @@
 import { supabaseClient } from '../config/supabase.js';
 import { getCurrentUser } from './auth.js';
 import { formatCurrency } from '../utils/formatters.js';
+import ibmPlexSansRegularUrl from '../assets/fonts/pdf/IBMPlexSans-Regular.woff2?url';
+import ibmPlexSansBoldUrl from '../assets/fonts/pdf/IBMPlexSans-Bold.woff2?url';
+import ibmPlexSansItalicUrl from '../assets/fonts/pdf/IBMPlexSans-Italic.woff2?url';
+import ibmPlexSansBoldItalicUrl from '../assets/fonts/pdf/IBMPlexSans-BoldItalic.woff2?url';
 
 let pdfMakeReadyPromise = null;
+let customFontRegistrationAttempted = false;
+const HOURS_PER_WORKDAY = 8;
+
+// function arrayBufferToBase64(arrayBuffer) {
+//   const bytes = new Uint8Array(arrayBuffer);
+//   let binary = '';
+//   const chunkSize = 0x8000;
+
+//   for (let index = 0; index < bytes.length; index += chunkSize) {
+//     const chunk = bytes.subarray(index, index + chunkSize);
+//     binary += String.fromCharCode(...chunk);
+//   }
+
+//   return btoa(binary);
+// }
+
+// async function registerCustomFonts(pdfMake) {
+//   if (customFontRegistrationAttempted) {
+//     return Boolean(pdfMake.fonts?.IBMPlexSans);
+//   }
+
+//   customFontRegistrationAttempted = true;
+
+//   try {
+//     const fontFiles = [
+//       ['IBMPlexSans-Regular.woff2', ibmPlexSansRegularUrl],
+//       ['IBMPlexSans-Bold.woff2', ibmPlexSansBoldUrl],
+//       ['IBMPlexSans-Italic.woff2', ibmPlexSansItalicUrl],
+//       ['IBMPlexSans-BoldItalic.woff2', ibmPlexSansBoldItalicUrl]
+//     ];
+
+//     const entries = await Promise.all(fontFiles.map(async ([fileName, fileUrl]) => {
+//       const response = await fetch(fileUrl);
+//       if (!response.ok) {
+//         throw new Error(`Unable to load font file: ${fileName}`);
+//       }
+
+//       const base64Content = arrayBufferToBase64(await response.arrayBuffer());
+//       return [fileName, base64Content];
+//     }));
+
+//     entries.forEach(([fileName, base64Content]) => {
+//       pdfMake.vfs[fileName] = base64Content;
+//     });
+
+//     pdfMake.fonts = {
+//       ...(pdfMake.fonts || {}),
+//       IBMPlexSans: {
+//         normal: 'IBMPlexSans-Regular.woff2',
+//         bold: 'IBMPlexSans-Bold.woff2',
+//         italics: 'IBMPlexSans-Italic.woff2',
+//         bolditalics: 'IBMPlexSans-BoldItalic.woff2'
+//       }
+//     };
+
+//     return true;
+//   } catch (error) {
+//     console.warn('Custom PDF fonts could not be registered. Falling back to Roboto.', error);
+//     return false;
+//   }
+// }
+
+// function replaceFontFamily(node, sourceFont, targetFont) {
+//   if (Array.isArray(node)) {
+//     return node.map(item => replaceFontFamily(item, sourceFont, targetFont));
+//   }
+
+//   if (node && typeof node === 'object') {
+//     const replacedNode = {};
+//     Object.entries(node).forEach(([key, value]) => {
+//       if (key === 'font' && value === sourceFont) {
+//         replacedNode[key] = targetFont;
+//       } else {
+//         replacedNode[key] = replaceFontFamily(value, sourceFont, targetFont);
+//       }
+//     });
+//     return replacedNode;
+//   }
+
+//   return node;
+// }
 
 async function getPdfMake() {
   if (!pdfMakeReadyPromise) {
@@ -29,36 +114,61 @@ async function getPdfMake() {
  */
 export function mergePDFTemplate(templateDef, reportData) {
   const template = JSON.parse(JSON.stringify(templateDef)); // Deep clone
+  const isBulgarianTemplate = String(reportData?.template?.name || '').toLowerCase().includes('bulgarian');
+  const activities = Array.isArray(reportData?.activities) ? reportData.activities : [];
+  const totalWorkedHours = activities.reduce((sum, activity) => sum + Number(activity?.hours || 0), 0);
+  const equivalentDays = totalWorkedHours / HOURS_PER_WORKDAY;
 
   // Create activities table for insertion
   const activitiesTableBody = [
     // Header row
-    ['#', 'Activity', 'Rate/Hour (EUR)', 'Hours', 'Total (EUR)']
+    isBulgarianTemplate
+      ? ['№', 'Дейност', 'Ставка/час (EUR)', 'Часове', 'Общо (EUR)']
+      : ['#', 'Activity', 'Rate/Hour (EUR)', 'Hours', 'Total (EUR)']
   ];
 
   // Data rows
-  reportData.activities.forEach(activity => {
+  activities.forEach(activity => {
     activitiesTableBody.push([
-      activity.seq.toString(),
-      activity.name,
-      formatCurrency(activity.hourly_rate),
-      activity.hours.toFixed(2),
-      formatCurrency(activity.total)
+      String(activity?.seq ?? ''),
+      activity?.name || '',
+      formatCurrency(Number(activity?.hourly_rate || 0)),
+      Number(activity?.hours || 0).toFixed(2),
+      formatCurrency(Number(activity?.total || 0))
     ]);
   });
 
   // Total row
   activitiesTableBody.push([
-    { text: 'TOTAL', colSpan: 4, alignment: 'right', bold: true },
+    { text: isBulgarianTemplate ? 'Общо' : 'TOTAL', colSpan: 4, alignment: 'right', bold: true },
     {},
     {},
     {},
-    { text: formatCurrency(reportData.totalAmount), bold: true }
+    { text: formatCurrency(Number(reportData?.totalAmount || 0)), bold: true }
   ]);
+
+  if (isBulgarianTemplate) {
+    activitiesTableBody.push([
+      { text: 'Общо часове', colSpan: 4, alignment: 'right', bold: true },
+      {},
+      {},
+      {},
+      { text: `${totalWorkedHours.toFixed(2)} ч.`, bold: true }
+    ]);
+
+    activitiesTableBody.push([
+      { text: `Еквивалентни дни (${HOURS_PER_WORKDAY} ч/ден)`, colSpan: 4, alignment: 'right', bold: true },
+      {},
+      {},
+      {},
+      { text: `${equivalentDays.toFixed(2)} дни`, bold: true }
+    ]);
+  }
 
   // Placeholders mapping
   const placeholders = {
     '{{reportDate}}': reportData.reportDate,
+    '{{monthNameBg}}': reportData.monthNameBg || '',
     '{{location}}': reportData.location,
     '{{companyName}}': reportData.company.name,
     '{{taxNumber}}': reportData.company.tax_number,
@@ -66,7 +176,7 @@ export function mergePDFTemplate(templateDef, reportData) {
     '{{workerName}}': reportData.worker.full_name,
     '{{introText}}': reportData.introText,
     '{{outroText}}': reportData.outroText,
-    '{{totalAmount}}': formatCurrency(reportData.totalAmount),
+    '{{totalAmount}}': formatCurrency(Number(reportData.totalAmount || 0)),
     '{{activitiesTable}}': {
       table: {
         headerRows: 1,
@@ -120,8 +230,14 @@ export async function generatePDF(reportData) {
   try {
     const pdfMake = await getPdfMake();
 
+    // const customFontLoaded = await registerCustomFonts(pdfMake);
+
     // Merge template with data
-    const docDefinition = mergePDFTemplate(reportData.template.template_definition, reportData);
+    let docDefinition = mergePDFTemplate(reportData.template.template_definition, reportData);
+
+    // if (!customFontLoaded) {
+    //   docDefinition = replaceFontFamily(docDefinition, 'IBMPlexSans', 'Roboto');
+    // }
 
     // Add styles if provided in template
     if (reportData.template.styles) {

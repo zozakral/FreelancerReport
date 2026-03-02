@@ -5,6 +5,33 @@ import { getReportConfig } from './reportConfigs.js';
 import { getCompany } from './companies.js';
 import { listWorkEntries } from './workEntries.js';
 
+function getBulgarianMonthName(monthString) {
+  const monthNames = [
+    'януари',
+    'февруари',
+    'март',
+    'април',
+    'май',
+    'юни',
+    'юли',
+    'август',
+    'септември',
+    'октомври',
+    'ноември',
+    'декември'
+  ];
+
+  const value = String(monthString || '').trim();
+  const parts = value.split('-');
+  const monthPart = Number(parts[1]);
+
+  if (!Number.isInteger(monthPart) || monthPart < 1 || monthPart > 12) {
+    return '';
+  }
+
+  return monthNames[monthPart - 1];
+}
+
 /**
  * Generate structured report data for PDF
  * @param {string} companyId - Company ID
@@ -53,6 +80,7 @@ export async function generateReportData(companyId, month, reportDate, onBehalfO
   // Structure report data
   return {
     reportDate: reportDate,
+    monthNameBg: getBulgarianMonthName(month),
     location: config.location || '',
     company: {
       name: company.name,

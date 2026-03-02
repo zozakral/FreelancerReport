@@ -18,6 +18,13 @@ function getMonthStartFromInput(monthValue) {
 	return v ? `${v}-01` : '';
 }
 
+function toDisplayDate(isoDateString) {
+	const value = String(isoDateString || '').trim();
+	const [year, month, day] = value.split('-');
+	if (!year || !month || !day) return value;
+	return `${day}.${month}.${year}`;
+}
+
 export async function initReportsPage() {
 	if (await redirectIfNotAuthenticated()) return;
 	await bootstrapPage({ title: t('title.reports') });
@@ -324,7 +331,8 @@ export async function initReportsPage() {
 		}
 
 		try {
-			const reportData = await generateReportData(companyId, monthStart, reportDate, onBehalfOfUserId);
+			const reportDateDisplay = toDisplayDate(reportDate);
+			const reportData = await generateReportData(companyId, monthStart, reportDateDisplay, onBehalfOfUserId);
 			const blob = await generatePDF(reportData);
 
 			const period = monthEl.value;
