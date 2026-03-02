@@ -2,10 +2,10 @@ import { bootstrapPage } from '../../core/bootstrapPage.js';
 import { initAdminUserSelector } from '../../core/adminImpersonation.js';
 import { listCompanies } from '../../services/companies.js';
 import { listReportTemplates, getReportConfig, upsertReportConfig } from '../../services/reportConfigs.js';
-import { generateReportData, saveGeneratedReport } from '../../services/reportGenerator.js';
+import { generateReportData, saveGeneratedReport, listGeneratedReports, getReportDownloadUrl } from '../../services/reportGenerator.js';
 import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath } from '../../services/pdfGenerator.js';
 import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
-import { formatDate } from '../../utils/formatters.js';
+import { formatDate, formatMonthDisplay } from '../../utils/formatters.js';
 import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
 import { getLocale, t } from '../../utils/i18n.js';
 
@@ -31,6 +31,7 @@ export async function initReportsPage() {
 			onBehalfOfUserId = userId;
 			await loadLookups();
 			await loadConfigForSelectedCompany();
+			await loadSavedReports();
 		},
 	});
 	onBehalfOfUserId = selectedUserId || null;
@@ -53,7 +54,8 @@ export async function initReportsPage() {
 	const dateYearSelectEl = document.querySelector('#report-date-year-select');
 	const downloadBtn = document.querySelector('#report-download');
 	const saveDownloadBtn = document.querySelector('#report-save-download');
-	if (!companyEl || !templateEl || !locationEl || !introEl || !outroEl || !configForm || !monthEl || !dateEl || !monthSelectEl || !yearSelectEl || !daySelectEl || !dateMonthSelectEl || !dateYearSelectEl || !downloadBtn || !saveDownloadBtn) return;
+	const savedReportsBodyEl = document.querySelector('#saved-reports-body');
+	if (!companyEl || !templateEl || !locationEl || !introEl || !outroEl || !configForm || !monthEl || !dateEl || !monthSelectEl || !yearSelectEl || !daySelectEl || !dateMonthSelectEl || !dateYearSelectEl || !downloadBtn || !saveDownloadBtn || !savedReportsBodyEl) return;
 
 	const now = new Date();
 	monthEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -241,6 +243,77 @@ export async function initReportsPage() {
 		}
 	}
 
+	function formatSavedReportDate(value) {
+		const date = new Date(`${value}T00:00:00`);
+		if (Number.isNaN(date.getTime())) {
+			return String(value || '');
+		}
+
+		return date.toLocaleDateString(getLocale());
+	}
+
+	async function loadSavedReports() {
+		try {
+			const reports = await listGeneratedReports(null, onBehalfOfUserId);
+			const savedReports = reports.filter((report) => report?.save_to_storage && report?.file_path);
+
+			if (savedReports.length === 0) {
+				savedReportsBodyEl.innerHTML = `
+					<tr>
+						<td colspan="4" class="text-muted">${t('reports.noSaved')}</td>
+					</tr>
+				`;
+				return;
+			}
+
+			savedReportsBodyEl.innerHTML = savedReports.map((report) => {
+				const companyName = report.company?.name || '-';
+				const periodLabel = formatMonthDisplay(report.report_period);
+				const reportDate = formatSavedReportDate(report.report_date);
+				const filename = String(report.file_path).split('/').pop() || 'report.pdf';
+
+				return `
+					<tr>
+						<td>${companyName}</td>
+						<td>${periodLabel}</td>
+						<td>${reportDate}</td>
+						<td>
+							<button
+								type="button"
+								class="btn btn-sm btn-outline-primary"
+								data-action="download-saved-report"
+								data-file-path="${report.file_path}"
+								data-filename="${filename}"
+							>${t('actions.download')}</button>
+						</td>
+					</tr>
+				`;
+			}).join('');
+		} catch (err) {
+			savedReportsBodyEl.innerHTML = `
+				<tr>
+					<td colspan="4" class="text-danger">${t('messages.savedReportsLoadFailed')}</td>
+				</tr>
+			`;
+			showErrorAlert(err?.message || t('messages.savedReportsLoadFailed'));
+		}
+	}
+
+	async function downloadSavedReport(filePath, filename) {
+		try {
+			const signedUrl = await getReportDownloadUrl(filePath);
+			const link = document.createElement('a');
+			link.href = signedUrl;
+			link.download = filename || 'report.pdf';
+			link.rel = 'noopener';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} catch (err) {
+			showErrorAlert(err?.message || t('messages.reportDownloadFailed'));
+		}
+	}
+
 	async function generateAndDownload({ saveToStorage }) {
 		const companyId = companyEl.value;
 		const monthStart = getMonthStartFromInput(monthEl.value);
@@ -269,6 +342,7 @@ export async function initReportsPage() {
 				}, onBehalfOfUserId);
 
 				showSuccessMessage(t('messages.reportSaved'));
+				await loadSavedReports();
 			}
 
 			downloadPDF(blob, filename);
@@ -280,6 +354,19 @@ export async function initReportsPage() {
 	companyEl.addEventListener('change', () => {
 		storeDefaultCompanyId(companyEl.value);
 		void loadConfigForSelectedCompany();
+	});
+	savedReportsBodyEl.addEventListener('click', (event) => {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+
+		const button = target.closest('button[data-action="download-saved-report"]');
+		if (!button) return;
+
+		const filePath = button.getAttribute('data-file-path') || '';
+		const filename = button.getAttribute('data-filename') || 'report.pdf';
+		if (!filePath) return;
+
+		void downloadSavedReport(filePath, filename);
 	});
 	configForm.addEventListener('submit', (e) => {
 		e.preventDefault();
@@ -309,12 +396,14 @@ export async function initReportsPage() {
 
 	await loadLookups();
 	await loadConfigForSelectedCompany();
+	await loadSavedReports();
 	renderMonthControls(monthEl.value);
 	renderDateControls(dateEl.value);
 
 	window.addEventListener('languagechange', () => {
 		void loadLookups();
 		void loadConfigForSelectedCompany();
+		void loadSavedReports();
 		renderMonthControls(monthEl.value);
 		renderDateControls(dateEl.value);
 	});
