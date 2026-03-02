@@ -381,28 +381,91 @@ USING (is_admin());
 
 ## Relationships Diagram
 
-```
-auth.users (Supabase Auth)
-    ↓ 1:1
-profiles (id, role, full_name)
-    ↓ 1:N
-    ├── companies (id, name, tax_number, city, user_id)
-    │       ↓ 1:N
-    │       ├── work_entries (id, company_id, activity_id, month, hours, user_id)
-    │       ├── report_configs (id, company_id, template_id, intro_text, outro_text, user_id)
-    │       └── generated_reports (id, company_id, report_period, file_path, user_id)
-    │
-    ├── activities (id, name, hourly_rate, user_id)
-    │       ↓ 1:N
-    │       └── work_entries (id, activity_id, company_id, month, hours, user_id)
-    │
-    ├── work_entries (id, user_id, activity_id, company_id, month, hours)
-    ├── report_configs (id, user_id, company_id, template_id, intro_text, outro_text)
-    └── generated_reports (id, user_id, company_id, report_period, file_path)
+```mermaid
+erDiagram
+  PROFILES {
+    uuid id PK
+    text role
+    text full_name
+    timestamptz created_at
+    timestamptz updated_at
+  }
 
-report_templates (global, id, name, template_definition)
-    ↓ 1:N
-report_configs (id, template_id, ...)
+  COMPANIES {
+    uuid id PK
+    uuid user_id FK
+    text name
+    text tax_number
+    text city
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  ACTIVITIES {
+    uuid id PK
+    uuid user_id FK
+    text name
+    decimal hourly_rate
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  REPORT_TEMPLATES {
+    uuid id PK
+    text name
+    text description
+    jsonb template_definition
+    jsonb styles
+    timestamptz created_at
+  }
+
+  REPORT_CONFIGS {
+    uuid id PK
+    uuid user_id FK
+    uuid company_id FK
+    uuid template_id FK
+    text intro_text
+    text outro_text
+    text location
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  WORK_ENTRIES {
+    uuid id PK
+    uuid user_id FK
+    uuid activity_id FK
+    uuid company_id FK
+    date month
+    decimal hours
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  GENERATED_REPORTS {
+    uuid id PK
+    uuid user_id FK
+    uuid company_id FK
+    date report_period
+    date report_date
+    text file_path
+    boolean save_to_storage
+    timestamptz created_at
+  }
+
+  PROFILES ||--o{ COMPANIES : owns
+  PROFILES ||--o{ ACTIVITIES : owns
+  PROFILES ||--o{ WORK_ENTRIES : owns
+  PROFILES ||--o{ REPORT_CONFIGS : owns
+  PROFILES ||--o{ GENERATED_REPORTS : owns
+
+  COMPANIES ||--o{ WORK_ENTRIES : has
+  ACTIVITIES ||--o{ WORK_ENTRIES : tracks
+
+  COMPANIES ||--o{ REPORT_CONFIGS : config_for
+  REPORT_TEMPLATES ||--o{ REPORT_CONFIGS : uses
+
+  COMPANIES ||--o{ GENERATED_REPORTS : report_for
 ```
 
 ---
