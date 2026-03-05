@@ -205,6 +205,8 @@ const translations = {
     'messages.reportConfigLoadFailed': 'Грешка при зареждане на конфигурацията',
     'messages.reportGenerateFailed': 'Грешка при генериране на отчет',
     'messages.reportSaved': 'Отчетът е запазен',
+    'messages.reportDeleted': 'Отчетът е изтрит',
+    'messages.reportDeleteFailed': 'Грешка при изтриване на отчет',
     'messages.reportDownloadFailed': 'Грешка при изтегляне на отчет',
     'messages.savedReportsLoadFailed': 'Грешка при зареждане на запазените отчети',
     'messages.reportSelectCompanyTemplate': 'Изберете компания и шаблон',
@@ -215,6 +217,7 @@ const translations = {
 
     'confirm.deleteCompany': 'Да изтрия тази компания?',
     'confirm.deleteActivity': 'Да изтрия тази дейност?',
+    'confirm.deleteReport': 'Да изтрия този отчет?',
     'confirm.deleteUserProfile': 'Да изтрия този профил? (Auth потребителят остава)',
 
     'aria.close': 'Затвори',
@@ -421,6 +424,8 @@ const translations = {
     'messages.reportConfigLoadFailed': 'Failed to load report config',
     'messages.reportGenerateFailed': 'Failed to generate report',
     'messages.reportSaved': 'Report saved',
+    'messages.reportDeleted': 'Report deleted',
+    'messages.reportDeleteFailed': 'Failed to delete report',
     'messages.reportDownloadFailed': 'Failed to download report',
     'messages.savedReportsLoadFailed': 'Failed to load saved reports',
     'messages.reportSelectCompanyTemplate': 'Select company and template',
@@ -431,6 +436,7 @@ const translations = {
 
     'confirm.deleteCompany': 'Delete this company?',
     'confirm.deleteActivity': 'Delete this activity?',
+    'confirm.deleteReport': 'Delete this report?',
     'confirm.deleteUserProfile': 'Delete this profile? (Auth user will remain)',
 
     'aria.close': 'Close',

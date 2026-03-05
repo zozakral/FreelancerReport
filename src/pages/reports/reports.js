@@ -2,9 +2,9 @@ import { bootstrapPage } from '../../core/bootstrapPage.js';
 import { initAdminUserSelector } from '../../core/adminImpersonation.js';
 import { listCompanies } from '../../services/companies.js';
 import { listReportTemplates, getReportConfig, upsertReportConfig } from '../../services/reportConfigs.js';
-import { generateReportData, saveGeneratedReport, listGeneratedReports, getReportDownloadUrl } from '../../services/reportGenerator.js';
-import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath } from '../../services/pdfGenerator.js';
-import { showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
+import { generateReportData, saveGeneratedReport, listGeneratedReports, getReportDownloadUrl, deleteGeneratedReport } from '../../services/reportGenerator.js';
+import { generatePDF, downloadPDF, uploadPDFToStorage, generateFilePath, deletePDFfromStorage } from '../../services/pdfGenerator.js';
+import { confirmAction, showErrorAlert, showSuccessMessage } from '../../utils/ui.js';
 import { formatDate, formatMonthDisplay } from '../../utils/formatters.js';
 import { getCurrentUser, redirectIfNotAuthenticated } from '../../services/auth.js';
 import { getLocale, t } from '../../utils/i18n.js';
@@ -292,6 +292,13 @@ export async function initReportsPage() {
 								data-file-path="${report.file_path}"
 								data-filename="${filename}"
 							>${t('actions.download')}</button>
+							<button
+								type="button"
+								class="btn btn-sm btn-outline-danger ms-2"
+								data-action="delete-saved-report"
+								data-report-id="${report.id}"
+								data-file-path="${report.file_path}"
+							>${t('actions.delete')}</button>
 						</td>
 					</tr>
 				`;
@@ -303,6 +310,23 @@ export async function initReportsPage() {
 				</tr>
 			`;
 			showErrorAlert(err?.message || t('messages.savedReportsLoadFailed'));
+		}
+	}
+
+	async function deleteSavedReport(reportId, filePath) {
+		const ok = confirmAction(t('confirm.deleteReport'));
+		if (!ok) return;
+
+		try {
+			if (filePath) {
+				await deletePDFfromStorage(filePath);
+			}
+
+			await deleteGeneratedReport(reportId, onBehalfOfUserId);
+			showSuccessMessage(t('messages.reportDeleted'));
+			await loadSavedReports();
+		} catch (err) {
+			showErrorAlert(err?.message || t('messages.reportDeleteFailed'));
 		}
 	}
 
@@ -367,14 +391,26 @@ export async function initReportsPage() {
 		const target = event.target;
 		if (!(target instanceof Element)) return;
 
-		const button = target.closest('button[data-action="download-saved-report"]');
+		const button = target.closest('button[data-action]');
 		if (!button) return;
 
-		const filePath = button.getAttribute('data-file-path') || '';
-		const filename = button.getAttribute('data-filename') || 'report.pdf';
-		if (!filePath) return;
+		const action = button.getAttribute('data-action');
+		if (action === 'download-saved-report') {
+			const filePath = button.getAttribute('data-file-path') || '';
+			const filename = button.getAttribute('data-filename') || 'report.pdf';
+			if (!filePath) return;
 
-		void downloadSavedReport(filePath, filename);
+			void downloadSavedReport(filePath, filename);
+			return;
+		}
+
+		if (action === 'delete-saved-report') {
+			const reportId = button.getAttribute('data-report-id') || '';
+			const filePath = button.getAttribute('data-file-path') || '';
+			if (!reportId) return;
+
+			void deleteSavedReport(reportId, filePath);
+		}
 	});
 	configForm.addEventListener('submit', (e) => {
 		e.preventDefault();

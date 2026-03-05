@@ -310,6 +310,21 @@ export async function uploadPDFToStorage(pdfBlob, filePath) {
 }
 
 /**
+ * Delete PDF from Supabase Storage
+ * @param {string} filePath - Path in storage bucket
+ * @returns {Promise<void>}
+ * @throws {Error} - If deletion fails
+ */
+export async function deletePDFfromStorage(filePath) {
+  const { error } = await supabaseClient
+    .storage
+    .from('work-reports')
+    .remove([filePath]);
+
+  if (error) throw new Error(`Delete failed: ${error.message}`);
+}
+
+/**
  * Generate file path for storage
  * @param {string} companyId - Company ID
  * @param {string} period - Period as YYYY-MM
