@@ -360,10 +360,13 @@ export async function initReportsPage() {
 			const blob = await generatePDF(reportData);
 
 			const period = monthEl.value;
-			const filename = `work-report-${period}.pdf`;
+			const now = new Date();
+			const today = formatDate(now);
+			const timeStr = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+			const filename = `work-report-${period}-dated-${reportDate}-created-${today}T${timeStr}.pdf`;
 
 			if (saveToStorage) {
-				const filePath = await generateFilePath(companyId, period, onBehalfOfUserId);
+				const filePath = await generateFilePath(companyId, filename, onBehalfOfUserId);
 				await uploadPDFToStorage(blob, filePath);
 				await saveGeneratedReport({
 					company_id: companyId,

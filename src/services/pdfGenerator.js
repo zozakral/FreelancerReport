@@ -327,11 +327,12 @@ export async function deletePDFfromStorage(filePath) {
 /**
  * Generate file path for storage
  * @param {string} companyId - Company ID
- * @param {string} period - Period as YYYY-MM
+ * @param {string} fileName - File name with extension
+ * @param {string|null} userIdOverride - Optional user ID override
  * @returns {Promise<string>} - File path
  */
-export async function generateFilePath(companyId, period, userIdOverride = null) {
+export async function generateFilePath(companyId, fileName, userIdOverride = null) {
   const user = userIdOverride ? { id: userIdOverride } : await getCurrentUser();
-  return `${user.id}/${companyId}/${period}.pdf`;
+  return `${user.id}/${companyId}/${fileName}`;
 }
 
